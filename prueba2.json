@@ -1,0 +1,852 @@
+[
+  {
+    "timestamp": "2026-05-26 16:39:46",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": null,
+    "lidar": {
+      "front": 1.379166603088379,
+      "left": 0.5414999723434448,
+      "right": 0.643916666507721
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 112,
+      "MFD": 110,
+      "MDD": 29,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:39:46",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": null,
+    "lidar": {
+      "front": 1.3200000524520874,
+      "left": 0.5414999723434448,
+      "right": 0.643833339214325
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 112,
+      "MFD": 110,
+      "MDD": 29,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:39:47",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": null,
+    "lidar": {
+      "front": 1.3196667432785034,
+      "left": 0.5411666631698608,
+      "right": 0.643750011920929
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 112,
+      "MFD": 110,
+      "MDD": 29,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:39:47",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": null,
+    "lidar": {
+      "front": 1.3802499771118164,
+      "left": 0.5414166450500488,
+      "right": 0.6425833106040955
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 112,
+      "MFD": 110,
+      "MDD": 29,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:39:47",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": null,
+    "lidar": {
+      "front": 1.2599166631698608,
+      "left": 0.5414166450500488,
+      "right": 0.6434999704360962
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 112,
+      "MFD": 110,
+      "MDD": 29,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:39:47",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": null,
+    "lidar": {
+      "front": 1.380750060081482,
+      "left": 0.5416666865348816,
+      "right": 0.6435832977294922
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 112,
+      "MFD": 110,
+      "MDD": 29,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:39:47",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": null,
+    "lidar": {
+      "front": 1.3804165124893188,
+      "left": 0.5409166812896729,
+      "right": 0.6430833339691162
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 112,
+      "MFD": 110,
+      "MDD": 29,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:39:47",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": null,
+    "lidar": {
+      "front": 1.2000000476837158,
+      "left": 0.5415832996368408,
+      "right": 0.6433333158493042
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 112,
+      "MFD": 110,
+      "MDD": 29,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:39:47",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": null,
+    "lidar": {
+      "front": 1.3795833587646484,
+      "left": 0.5410000085830688,
+      "right": 0.6429166793823242
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 112,
+      "MFD": 110,
+      "MDD": 29,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:39:47",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": null,
+    "lidar": {
+      "front": 1.3196667432785034,
+      "left": 0.5409166812896729,
+      "right": 0.6432499885559082
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 112,
+      "MFD": 110,
+      "MDD": 29,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:39:48",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": null,
+    "lidar": {
+      "front": 1.2000000476837158,
+      "left": 0.5413333177566528,
+      "right": 0.6433333158493042
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 112,
+      "MFD": 110,
+      "MDD": 29,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:39:48",
+    "type": "command",
+    "command": "F",
+    "source": "send_command",
+    "lidar": {
+      "front": 1.3801666498184204,
+      "left": 0.5414166450500488,
+      "right": 0.6441666483879089
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 112,
+      "MFD": 110,
+      "MDD": 29,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:00",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": "F",
+    "lidar": {
+      "front": 1.380083441734314,
+      "left": 0.5414999723434448,
+      "right": 0.6420833468437195
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 20,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:00",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": "F",
+    "lidar": {
+      "front": 1.380083441734314,
+      "left": 0.5414999723434448,
+      "right": 0.6420833468437195
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 20,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:00",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": "F",
+    "lidar": {
+      "front": 1.380083441734314,
+      "left": 0.5414999723434448,
+      "right": 0.6420833468437195
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 20,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:00",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": "F",
+    "lidar": {
+      "front": 1.380083441734314,
+      "left": 0.5414999723434448,
+      "right": 0.6420833468437195
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 20,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:00",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": "F",
+    "lidar": {
+      "front": 1.380083441734314,
+      "left": 0.5414999723434448,
+      "right": 0.6420833468437195
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 20,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:00",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": "F",
+    "lidar": {
+      "front": 1.2603334188461304,
+      "left": 0.5413333177566528,
+      "right": 0.6429166793823242
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 20,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:00",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": "F",
+    "lidar": {
+      "front": 1.2603334188461304,
+      "left": 0.5413333177566528,
+      "right": 0.6429166793823242
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 20,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:00",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": "F",
+    "lidar": {
+      "front": 1.2603334188461304,
+      "left": 0.5413333177566528,
+      "right": 0.6429166793823242
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 20,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:00",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": "F",
+    "lidar": {
+      "front": 1.2603334188461304,
+      "left": 0.5413333177566528,
+      "right": 0.6429166793823242
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 20,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:00",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": "F",
+    "lidar": {
+      "front": 1.2603334188461304,
+      "left": 0.5413333177566528,
+      "right": 0.6429166793823242
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 20,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:00",
+    "type": "command",
+    "command": "F",
+    "source": "send_command",
+    "lidar": {
+      "front": 1.3808332681655884,
+      "left": 0.5414166450500488,
+      "right": 0.6430000066757202
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 20,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:40",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": "F",
+    "lidar": {
+      "front": 1.2598333358764648,
+      "left": 0.5412499904632568,
+      "right": 0.6422500014305115
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:40",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": "F",
+    "lidar": {
+      "front": 1.2598333358764648,
+      "left": 0.5412499904632568,
+      "right": 0.6422500014305115
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:40",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": "F",
+    "lidar": {
+      "front": 1.2598333358764648,
+      "left": 0.5412499904632568,
+      "right": 0.6422500014305115
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:40",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": "F",
+    "lidar": {
+      "front": 1.2598333358764648,
+      "left": 0.5412499904632568,
+      "right": 0.6422500014305115
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:40",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": "F",
+    "lidar": {
+      "front": 1.2000000476837158,
+      "left": 0.5411666631698608,
+      "right": 0.6424999833106995
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:41",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": "F",
+    "lidar": {
+      "front": 1.2000000476837158,
+      "left": 0.5411666631698608,
+      "right": 0.6424999833106995
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:41",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": "F",
+    "lidar": {
+      "front": 1.2000000476837158,
+      "left": 0.5411666631698608,
+      "right": 0.6424999833106995
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:41",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": "F",
+    "lidar": {
+      "front": 1.2000000476837158,
+      "left": 0.5411666631698608,
+      "right": 0.6424999833106995
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:41",
+    "type": "arduino_message",
+    "message": "MANUAL",
+    "last_command": "F",
+    "lidar": {
+      "front": 1.2000000476837158,
+      "left": 0.5411666631698608,
+      "right": 0.6424999833106995
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:41",
+    "type": "command",
+    "command": "F",
+    "source": "send_command",
+    "lidar": {
+      "front": 1.379166603088379,
+      "left": 0.5410833358764648,
+      "right": 0.6420000195503235
+    },
+    "ultrasonic": {
+      "MIT": 23,
+      "MID": 19,
+      "MFI": 113,
+      "MFD": 111,
+      "MDD": 30,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  },
+  {
+    "timestamp": "2026-05-26 16:40:44",
+    "type": "command",
+    "command": "S",
+    "source": "send_command",
+    "lidar": {
+      "front": 1.379166603088379,
+      "left": 0.5410833358764648,
+      "right": 0.6420000195503235
+    },
+    "ultrasonic": {
+      "MIT": 22,
+      "MID": 19,
+      "MFI": 113,
+      "MFD": 113,
+      "MDD": 29,
+      "MDT": 28,
+      "LIT": 0,
+      "LID": 0,
+      "LFI": 1,
+      "LFD": 1,
+      "LDD": 1,
+      "LDT": 1
+    }
+  }
+]

@@ -175,6 +175,10 @@ class ObstacleAvoidance(Node):
 
                     elif line == "CAMBIO A AUTONOMO":
                         self.modo = "Autonomo"
+                        self.last_cmd = None
+                        self.last_state = ""
+                        self.arduino_busy = False
+                        time.sleep(0.3)
                         self.get_logger().info("Modo: Autonomo")
                     elif line == "CAMBIO A MANUAL":
                         self.modo="Manual"
@@ -390,7 +394,7 @@ class ObstacleAvoidance(Node):
         self.dist_left = float(dist_left)
         self.dist_right = float(dist_right)
         
-        if self.modo == "Autonomo":
+        while self.modo == "Autonomo":
             # Vuelta en U
             if (dist_front < self.min_distance_fr and dist_right < self.min_distance_ld and dist_left < self.min_distance_ld):
 
