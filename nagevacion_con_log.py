@@ -33,7 +33,6 @@ class ObstacleAvoidance(Node):
         self.max_distance_ld = self.get_parameter('max_distance_ld').value
         self.modo = "Manual"
 
-
         # Crea el registro de los comandos usados durante el recorrido
         #Crea un archivo llamado "pruebaX.json" (La X representa un numero cualquiera)
         numeroarchivo = 0
@@ -74,15 +73,10 @@ class ObstacleAvoidance(Node):
         # Se hace la conexion con el Arduino mediante el SERIAL
         try:
             self.ser = serial.Serial('/dev/ttyUSB1', 9600, timeout=1)
-
             time.sleep(2)
-
             self.ser.reset_input_buffer()
-
             self.get_logger().info("Serial conectado al Arduino")
-
             self.serial_thread = threading.Thread(target=self.listen_arduino, daemon=True)
-
             self.serial_thread.start()
 
         except Exception as e:
@@ -106,21 +100,16 @@ class ObstacleAvoidance(Node):
 
     # Se definen los sectores del RPLIDAR para guardarlos en el archivo JSON
     def get_sector(self, msg, angle_start_deg, angle_end_deg):
-
         angle_min = msg.angle_min
         angle_inc = msg.angle_increment
-
         ranges = np.array(msg.ranges)
-
         ranges[ranges == 0] = self.max_distance_fr
         ranges[np.isnan(ranges)] = self.max_distance_fr
         ranges[np.isinf(ranges)] = self.max_distance_fr
-
         angles = angle_min + np.arange(len(ranges)) * angle_inc
         angles_deg = np.degrees(angles)
-
+        
         if angle_start_deg < angle_end_deg:
-
             mask = ((angles_deg >= angle_start_deg) & (angles_deg <= angle_end_deg))
 
         else:
@@ -164,9 +153,7 @@ class ObstacleAvoidance(Node):
 
                         try:
                             sensor_data = json.loads(line)
-
                             self.ultrasonic_data.update(sensor_data)
-
                             self.print_sensor_data(sensor_data)
 
                         except json.JSONDecodeError:
@@ -223,38 +210,29 @@ class ObstacleAvoidance(Node):
     def reset_busy(self):
 
         if self.arduino_busy:
-
             self.get_logger().warning("Timeout - Desbloqueando Arduino")
-
             self.arduino_busy = False
             self.last_state = ""
-
             self.timeout_timer = None
 
     # Envia el comando al Arduino, ya sea F = Adelante, R = Derecha, L = Izquierda, S = Stop, U = Vuelta en U
     def send_command(self, cmd):
 
         if self.arduino_busy:
-
             self.get_logger().warning(f"Arduino ocupado - Ignorando: {cmd}")
-
             return
 
         if cmd == self.last_cmd and cmd == "F":
             return
 
         self.last_cmd = cmd
-
         self.log_direction(cmd,source="send_command")
 
         if self.ser:
 
             if cmd in ['L', 'R', 'U']:
-
                 self.arduino_busy = True
-
                 self.get_logger().info(f"Arduino ocupado - Giro {cmd}")
-
             self.ser.write((cmd + '\n').encode())
 
         else:
@@ -273,13 +251,9 @@ class ObstacleAvoidance(Node):
             "timestamp": datetime.now().strftime(
                 "%Y-%m-%d %H:%M:%S"
             ),
-
             "type": "command",
-
             "command": cmd,
-
             "source": source,
-
             "lidar": {
                 "front": self.dist_front,
                 "left": self.dist_left,
@@ -298,19 +272,14 @@ class ObstacleAvoidance(Node):
             "timestamp": datetime.now().strftime(
                 "%Y-%m-%d %H:%M:%S"
             ),
-
             "type": "arduino_message",
-
             "message": message,
-
             "last_command": self.last_cmd,
-
             "lidar": {
                 "front": self.dist_front,
                 "left": self.dist_left,
                 "right": self.dist_right
             },
-
             "ultrasonic": self.ultrasonic_data.copy()
         }
 
@@ -320,36 +289,29 @@ class ObstacleAvoidance(Node):
     def append_log(self, entry):
 
         with self._log_lock:
-
             try:
-
                 data = []
 
                 if os.path.exists(self.log_file):
 
                     with open(self.log_file, "r") as f:
-
                         try:
                             data = json.load(f)
-
+                            
                             if not isinstance(data, list):
                                 data = []
 
                         except json.JSONDecodeError:
                             data = []
-
                 data.append(entry)
-
                 tmp_path = self.log_file + ".tmp"
 
                 with open(tmp_path, "w") as f:
-
                     json.dump(data, f, ensure_ascii=False, indent=2)
 
                 os.replace(tmp_path, self.log_file)
 
             except Exception as e:
-
                 self.get_logger().warning(f"Error log JSON: {e}")
 
     # Se definen los sectores de escaneo del RPLIDAR
@@ -366,9 +328,7 @@ class ObstacleAvoidance(Node):
 
         # Se definen los sectores de escaneo del RPLIDAR (hay veces que es necesario cambiar los parametros señalados)
         front = self.get_sector(msg, 170, -170) # Frontal
-
         left = self.get_sector(msg, -100, -80) # Izquierdo
-
         right = self.get_sector(msg, 80, 100) # Derecho
 
         # Promedio minimo de escaneo del RPLIDAR
@@ -400,11 +360,8 @@ class ObstacleAvoidance(Node):
                 state = (f"Obst DER IZQ FRONTAL " f"({dist_right:.2f}m) - U")
 
                 if state != self.last_state:
-
                     self.send_command('U')
-
                     self.get_logger().warn(state)
-
                     self.last_state = state
 
             # Obstaculo frontal y se decide para que lado girar, dependiendo de donde este una pared
@@ -415,11 +372,8 @@ class ObstacleAvoidance(Node):
                     state = (f"Obst frontal " f"({dist_front:.2f}m) - IZQ")
 
                     if state != self.last_state:
-
                         self.send_command('L')
-
                         self.get_logger().warn(state)
-
                         self.last_state = state
 
                 else:
@@ -427,11 +381,8 @@ class ObstacleAvoidance(Node):
                     state = (f"Obst frontal "f"({dist_front:.2f}m) - DER")
 
                     if state != self.last_state:
-
                         self.send_command('R')
-
                         self.get_logger().warn(state)
-
                         self.last_state = state
 
             # Gira a la izquierda si hay un obstaculo a la derecha
@@ -442,9 +393,7 @@ class ObstacleAvoidance(Node):
                 if state != self.last_state:
 
                     self.send_command('R')
-
                     self.get_logger().warn(state)
-
                     self.last_state = state
 
             # Gira a la derecha si hay un obstaculo a la izquierda
@@ -455,9 +404,7 @@ class ObstacleAvoidance(Node):
                 if state != self.last_state:
 
                     self.send_command('L')
-
                     self.get_logger().warn(state)
-
                     self.last_state = state
 
             # Camino libre
@@ -466,11 +413,8 @@ class ObstacleAvoidance(Node):
                 state = (f"Libre " f"F:{dist_front:.2f} " f"L:{dist_left:.2f} " f"R:{dist_right:.2f}")
 
                 if state != self.last_state:
-
                     self.send_command('F')
-
                     self.get_logger().info(state)
-
                     self.last_state = state
 
     # Cierre del nodo de ROS2
@@ -480,9 +424,7 @@ class ObstacleAvoidance(Node):
             self.timeout_timer.cancel()
 
         if self.ser:
-
             self.ser.write(b'S\n')
-
             self.ser.close()
 
         super().destroy_node()
@@ -490,22 +432,17 @@ class ObstacleAvoidance(Node):
 
 # Punto de entrada principal del nodo ROS2
 def main(args=None):
-
     rclpy.init(args=args)
-
     node = ObstacleAvoidance()
 
     try:
         rclpy.spin(node)
 
     except KeyboardInterrupt:
-
         node.send_command('S')
 
     finally:
-
         node.destroy_node()
-
         rclpy.shutdown()
 
 
