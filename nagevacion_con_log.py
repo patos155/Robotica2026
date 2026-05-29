@@ -31,6 +31,7 @@ class ObstacleAvoidance(Node):
         self.max_distance_fr = self.get_parameter('max_distance_fr').value
         self.min_distance_ld = self.get_parameter('min_distance_ld').value
         self.max_distance_ld = self.get_parameter('max_distance_ld').value
+        self.modo = "Manual"
 
 
         # Crea el registro de los comandos usados durante el recorrido
@@ -169,8 +170,18 @@ class ObstacleAvoidance(Node):
                             self.print_sensor_data(sensor_data)
 
                         except json.JSONDecodeError:
-
                             self.get_logger().warning(f"JSON invalido: {line}")
+
+                    elif line == "CAMBIO A AUTONOMO":
+                        self.modo = "Autonomo"
+                        self.last_cmd = None
+                        self.last_state = ""
+                        self.arduino_busy = False
+                        time.sleep(0.3)
+                        self.get_logger().info("Modo: Autonomo")
+                    elif line == "CAMBIO A MANUAL":
+                        self.modo="Manual"
+                        self.get_logger().info("Modo: Manual")
 
                     # Filtra el JSON
                     elif line.startswith("Ch #"):
@@ -181,9 +192,7 @@ class ObstacleAvoidance(Node):
 
                     # Cuando llega el print del Arduino, lo manda al JSON
                     elif line:
-
                         self.get_logger().info(f"Arduino: {line}")
-
                         self.log_arduino_message(line)
 
                 except Exception as e:
@@ -383,38 +392,52 @@ class ObstacleAvoidance(Node):
         self.dist_front = float(dist_front)
         self.dist_left = float(dist_left)
         self.dist_right = float(dist_right)
+        
+        while self.modo == "Autonomo":
+            # Vuelta en U
+            if (dist_front < self.min_distance_fr and dist_right < self.min_distance_ld and dist_left < self.min_distance_ld):
 
-        # Vuelta en U
-        if (dist_front < self.min_distance_fr and dist_right < self.min_distance_ld and dist_left < self.min_distance_ld):
-
-            state = (f"Obst DER IZQ FRONTAL " f"({dist_right:.2f}m) - U")
-
-            if state != self.last_state:
-
-                self.send_command('U')
-
-                self.get_logger().warn(state)
-
-                self.last_state = state
-
-        # Obstaculo frontal y se decide para que lado girar, dependiendo de donde este una pared
-        elif dist_front < self.min_distance_fr:
-
-            if dist_left > dist_right:
-
-                state = (f"Obst frontal " f"({dist_front:.2f}m) - IZQ")
+                state = (f"Obst DER IZQ FRONTAL " f"({dist_right:.2f}m) - U")
 
                 if state != self.last_state:
 
-                    self.send_command('L')
+                    self.send_command('U')
 
                     self.get_logger().warn(state)
 
                     self.last_state = state
 
-            else:
+            # Obstaculo frontal y se decide para que lado girar, dependiendo de donde este una pared
+            elif dist_front < self.min_distance_fr:
 
-                state = (f"Obst frontal "f"({dist_front:.2f}m) - DER")
+                if dist_left > dist_right:
+
+                    state = (f"Obst frontal " f"({dist_front:.2f}m) - IZQ")
+
+                    if state != self.last_state:
+
+                        self.send_command('L')
+
+                        self.get_logger().warn(state)
+
+                        self.last_state = state
+
+                else:
+
+                    state = (f"Obst frontal "f"({dist_front:.2f}m) - DER")
+
+                    if state != self.last_state:
+
+                        self.send_command('R')
+
+                        self.get_logger().warn(state)
+
+                        self.last_state = state
+
+            # Gira a la izquierda si hay un obstaculo a la derecha
+            elif dist_left < self.min_distance_ld:
+
+                state = (f"Obst IZQ " f"({dist_left:.2f}m)")
 
                 if state != self.last_state:
 
@@ -424,44 +447,31 @@ class ObstacleAvoidance(Node):
 
                     self.last_state = state
 
-        # Gira a la izquierda si hay un obstaculo a la derecha
-        elif dist_left < self.min_distance_ld:
+            # Gira a la derecha si hay un obstaculo a la izquierda
+            elif dist_right < self.min_distance_ld:
 
-            state = (f"Obst IZQ " f"({dist_left:.2f}m)")
+                state = (f"Obst DER " f"({dist_right:.2f}m)")
 
-            if state != self.last_state:
+                if state != self.last_state:
 
-                self.send_command('R')
+                    self.send_command('L')
 
-                self.get_logger().warn(state)
+                    self.get_logger().warn(state)
 
-                self.last_state = state
+                    self.last_state = state
 
-        # Gira a la derecha si hay un obstaculo a la izquierda
-        elif dist_right < self.min_distance_ld:
+            # Camino libre
+            else:
 
-            state = (f"Obst DER " f"({dist_right:.2f}m)")
+                state = (f"Libre " f"F:{dist_front:.2f} " f"L:{dist_left:.2f} " f"R:{dist_right:.2f}")
 
-            if state != self.last_state:
+                if state != self.last_state:
 
-                self.send_command('L')
+                    self.send_command('F')
 
-                self.get_logger().warn(state)
+                    self.get_logger().info(state)
 
-                self.last_state = state
-
-        # Camino libre
-        else:
-
-            state = (f"Libre " f"F:{dist_front:.2f} " f"L:{dist_left:.2f} " f"R:{dist_right:.2f}")
-
-            if state != self.last_state:
-
-                self.send_command('F')
-
-                self.get_logger().info(state)
-
-                self.last_state = state
+                    self.last_state = state
 
     # Cierre del nodo de ROS2
     def destroy_node(self):
