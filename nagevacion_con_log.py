@@ -17,7 +17,6 @@ import threading
 
 from datetime import datetime
 
-
 class ObstacleAvoidance(Node):
 
     def __init__(self):
