@@ -14,9 +14,20 @@ int izq1=10;
 int izq2=9;
 int der1=15;
 int der2=16;
-// ??????????????
+// parametros enviados desde python
+// Variables de distancia minima a paredes 
+int LL = 25;                        // Distancia lateral
+int LD = 25;                        // Distancia delantera
+int muestra = 0;
+// Potencias para motores 
+int potenciaI_frente = 100;
+int potenciaD_frente = potenciaI_frente;
+int potenciaI_giro = 200;
+int potenciaD_giro = potenciaI_giro;
 int potenciaI = 0;
 int potenciaD = 0;
+
+bool ultimoModoManual = 0;
 
 int servo_pinyB = 41;
 
@@ -57,17 +68,18 @@ int PWM_PIND = 7;
   long MIT,MID,MFI,MFD,MDD,MDT; // Mediciones de sensores ultrasonicos en centimetros 
   int  LIT,LID,LFI,LFD,LDD,LDT; // Valores logicos de lectura de sensores ultrasonicos
 
-/* Variables de distancia minima a paredes */
-  int LL = 30;                        // Distancia lateral
-  int LD = 50;                        // Distancia delantera
+
  
 const int pulseInDelay = 30000;   //20000;
+
+long potenciaAutomaticaMaxima = 1;
+long potenciaAutomatica = 0.8;
  
 void setup() 
 { 
   Serial.begin(9600);
   while (!Serial); // Espera conexión 
-  Serial.println("Arduino listo");
+  //Serial.println("Arduino listo");
   //salidas a relevadores para movimiento  
   pinMode(izq1, OUTPUT);
   pinMode(izq2, OUTPUT);
@@ -139,6 +151,8 @@ void vueltaDerecha()
   delay(5000);
 
   Serial.println("-------->>> inicia giro a la derecha");
+  analogWrite(PWM_PINI, potenciaI_giro);
+  analogWrite(PWM_PIND, potenciaD_giro);
   //gira derecha
   //Izquierdas adelante
   digitalWrite(izq1,HIGH);
@@ -156,13 +170,17 @@ void vueltaDerecha()
   //Derechas detenidas
   digitalWrite(der1,LOW);
   digitalWrite(der2,LOW); 
-  delay(1000);
-  lee_ultrasonicos();
+  delay(5000);
 
-  while(MIT > MID-5)
+
+  lee_ultrasonicos();
+  
+  while(MIT > MID)
     {
       Serial.println("----------->>>> Girando a la derecha");
       //gira derecha
+      analogWrite(PWM_PINI, potenciaI_giro);
+      analogWrite(PWM_PIND, potenciaD_giro);
       //Izquierdas adelante
       digitalWrite(izq1,HIGH);
       digitalWrite(izq2,LOW);
@@ -180,28 +198,16 @@ void vueltaDerecha()
   //Derechas detenidas
   digitalWrite(der1,LOW);
   digitalWrite(der2,LOW); 
-  delay(3000);
-
-  Serial.println("------------ Avanza");
-  //adelante        
-  //Izquierdas adelante
+  delay(5000);
+  
+  Serial.println("--------- Adelate luego de la vuelta");
   digitalWrite(izq1,HIGH);
-  digitalWrite(izq2,LOW);
-  //Derechas adelante
+  digitalWrite(izq2,HIGH);
   digitalWrite(der1,HIGH);
-  digitalWrite(der2,LOW);
-  delay(1000);
-
-  Serial.println("------------ Alto");
-  //Se detiene
-  //Izquierdas detenidas
-  digitalWrite(izq1,LOW);
-  digitalWrite(izq2,LOW);
-  //Derechas detenidas
-  digitalWrite(der1,LOW);
-  digitalWrite(der2,LOW); 
-  delay(10000);
-
+  digitalWrite(der2,HIGH); 
+  analogWrite(PWM_PINI, potenciaI_frente);
+  analogWrite(PWM_PIND, potenciaD_frente);
+  delay(1500);  
   Serial.println("T");
 }
 
@@ -216,17 +222,19 @@ void vueltaIzquierda()
   //Derechas detenidas
   digitalWrite(der1,LOW);
   digitalWrite(der2,LOW); 
-  delay(5000);
+  delay(10000);
 
   Serial.println("--------->>>>> Inicia giro izquierdo");
   //Inicia giro Izquierdo
   //Izquierdas atras
+  analogWrite(PWM_PINI, potenciaI_giro);
+  analogWrite(PWM_PIND, potenciaD_giro);
   digitalWrite(izq1,LOW);
   digitalWrite(izq2,HIGH);
   //Derechas adelante
   digitalWrite(der1,HIGH);
   digitalWrite(der2,LOW);
-  delay(1000);
+  delay(2000);
 
   Serial.println("--------- Alto antes de girar con sensores");
   //Se detiene
@@ -236,16 +244,21 @@ void vueltaIzquierda()
   //Derechas detenidas
   digitalWrite(der1,LOW);
   digitalWrite(der2,LOW); 
-  delay(1000);
+  delay(10000);
 
   lee_ultrasonicos();
-  
-  while(MDT > MDD-5)
+  while(MDT > MDD)
     {
 
-      Serial.println("--------->>>>> Girando izquierda");
+      Serial.print("--------->>>>> Girando izquierda");
+      Serial.print("MDT ");
+      Serial.print(MDT);
+      Serial.print("      MDD ");
+      Serial.println(MDD);
       //Gira Izquierdo
       //Izquierdas atras
+      analogWrite(PWM_PINI, potenciaI_giro);
+      analogWrite(PWM_PIND, potenciaD_giro);
       digitalWrite(izq1,LOW);
       digitalWrite(izq2,HIGH);
       //Derechas adelante
@@ -262,28 +275,94 @@ void vueltaIzquierda()
   //Derechas detenidas
   digitalWrite(der1,LOW);
   digitalWrite(der2,LOW); 
-  delay(3000);  
-
-  Serial.println("--------- Avanza");
-  //adelante        
-  //Izquierdas adelante
+  delay(10000); 
+   
+  Serial.println("--------- Adelate luego de la vuelta");
   digitalWrite(izq1,HIGH);
-  digitalWrite(izq2,LOW);
-  //Derechas adelante
+  digitalWrite(izq2,HIGH);
   digitalWrite(der1,HIGH);
-  digitalWrite(der2,LOW);
-  delay(1000);
+  digitalWrite(der2,HIGH); 
+  analogWrite(PWM_PINI, potenciaI_frente);
+  analogWrite(PWM_PIND, potenciaD_frente);
+  delay(1000);  
+  Serial.println("T");
+
+}
+
+void vueltaU()
+{
 
   Serial.println("--------- Alto");
-    //Se detiene
+  //Se detiene
   //Izquierdas detenidas
   digitalWrite(izq1,LOW);
   digitalWrite(izq2,LOW);
   //Derechas detenidas
   digitalWrite(der1,LOW);
   digitalWrite(der2,LOW); 
-  delay(10000);
+  delay(1000);
 
+  Serial.println("--------->>>>> Inicia giro U");
+  //Inicia giro Izquierdo
+  //Izquierdas atras
+  analogWrite(PWM_PINI, potenciaI_giro);
+  analogWrite(PWM_PIND, potenciaD_giro);
+  digitalWrite(izq1,LOW);
+  digitalWrite(izq2,HIGH);
+  //Derechas adelante
+  digitalWrite(der1,HIGH);
+  digitalWrite(der2,LOW);
+  delay(4000);
+
+  Serial.println("--------- Alto antes de girar U con sensores");
+  //Se detiene
+  //Izquierdas detenidas
+  digitalWrite(izq1,LOW);
+  digitalWrite(izq2,LOW);
+  //Derechas detenidas
+  digitalWrite(der1,LOW);
+  digitalWrite(der2,LOW); 
+  delay(1000);
+
+  lee_ultrasonicos();
+  while(MDT > MDD)
+    {
+
+      Serial.print("--------->>>>> Girando U");
+      Serial.print("MDT ");
+      Serial.print(MDT);
+      Serial.print("      MDD ");
+      Serial.println(MDD);
+      //Gira Izquierdo
+      //Izquierdas atras
+       analogWrite(PWM_PINI, potenciaI_giro);
+      analogWrite(PWM_PIND, potenciaD_giro);
+      digitalWrite(izq1,LOW);
+      digitalWrite(izq2,HIGH);
+      //Derechas adelante
+      digitalWrite(der1,HIGH);
+      digitalWrite(der2,LOW);
+      lee_ultrasonicos();
+    }
+  
+  Serial.println("--------- Alto");
+  //Se detiene
+   //Izquierdas detenidas
+  digitalWrite(izq1,LOW);
+  digitalWrite(izq2,LOW);
+  //Derechas detenidas
+  digitalWrite(der1,LOW);
+  digitalWrite(der2,LOW); 
+  delay(1000); 
+   
+  Serial.println("--------- Adelate luego de la vuelta");
+  digitalWrite(izq1,HIGH);
+  digitalWrite(izq2,HIGH);
+  digitalWrite(der1,HIGH);
+  digitalWrite(der2,HIGH); 
+  analogWrite(PWM_PINI, potenciaI_frente);
+  analogWrite(PWM_PIND, potenciaD_frente);
+  delay(1000);  
   Serial.println("T");
 
 }
@@ -291,118 +370,106 @@ void vueltaIzquierda()
 //decodifica las lecturas del control remoto para controlar los motores  
 void control_motores()
 {
-  // palanca 4 abajo autonomo / arriba controlado  
-  if ( chValue[4]<=.5){
-    //lee ultrasonicos 
-    Serial.println("------verifica distancia de emergencia-------------");
-    lee_ultrasonicos();
-    if (MFD > 50){
-      if (Serial.available()) {
-        String mensaje = Serial.readStringUntil('\n');
-        if (mensaje == "F") {
-          Serial.println("CMD:adelante");
-          //Izquierdas adelante
-          digitalWrite(izq1,HIGH);
-          digitalWrite(izq2,LOW);
-          //Derechas adelante
-          digitalWrite(der1,HIGH);
-          digitalWrite(der2,LOW);
-        }else{
-          if (mensaje == "L") {
-            vueltaIzquierda();
-            Serial.println("CMD:izquierda");
-          }else{
-            if (mensaje == "R") {
-              vueltaDerecha();
-              Serial.println("CMD:derecha");
-            }else{
-              Serial.println("CMD:alto");
-              //Izquierdas detenidas
-              digitalWrite(izq1,LOW);
-              digitalWrite(izq2,LOW);
-              //Derechas detenidas
-              digitalWrite(der1,LOW);
-              digitalWrite(der2,LOW);
-            }
-          }
-        }
-      }
-    }else
-      {
-        Serial.println("------ ALTO EMERGENCIA -------------");
-        digitalWrite(izq1,LOW);
-        digitalWrite(izq2,LOW);
-        //Derechas adelante
-        digitalWrite(der1,LOW);
-        digitalWrite(der2,LOW);
+  bool modoManual = (chValue[4] > .5);
+
+  if (!modoManual) {
+    // ── MODO AUTÓNOMO ──────────────────────────────────────────
+    if (ultimoModoManual) {
+      Serial.println("CAMBIO A AUTONOMO");
+      while (Serial.available()) Serial.read();
+      control = 0;
     }
-  }else {
-      Serial.println("CMD:Control remoto");
-      //motores izquierdos
-      if (chValue[1]>.35 and chValue[1]<.65){ 
-        digitalWrite(izq1,LOW);
-        digitalWrite(izq2,LOW);
-        analogWrite(PWM_PINI, 0);
-      }else{
-        //Serial.println("--------------------------------------");
-        // la palanca izquierda esta hacia adelante y los motores izquierdos se mueven al frente 
-        if (chValue[1]>.65){ 
-          potenciaI = map(chValue[1]*100,65,100,0,255);
-          //Serial.print("Adelante Izquierda "); 
-          //Serial.println(potenciaI); 
-          analogWrite(PWM_PINI, potenciaI);
-          digitalWrite(izq1,HIGH);
-          digitalWrite(izq2,LOW);
-        } else {
-            if (chValue[1]<.35){
-              potenciaI = map(chValue[1]*100,35,0,0,255);
-              //Serial.print("Atras Izquierda");
-              //Serial.println(potenciaI);  
-              analogWrite(PWM_PINI, potenciaI); 
-              digitalWrite(izq1,LOW);
-              digitalWrite(izq2,HIGH);
-            }
-        }
-      }
-      if (chValue[2]>.35 and chValue[2]<.65){
-        digitalWrite(der1,LOW);
-        digitalWrite(der2,LOW);
-        analogWrite(PWM_PIND, 0);
-      }else{
-        if (chValue[2]>.65){
-          potenciaD = map(chValue[2]*100,65,100,0,255);
-          //Serial.print("Adelante Derecha");
-          //Serial.println(potenciaD);
-          analogWrite(PWM_PIND, potenciaD);
-          digitalWrite(der1,HIGH);
-          digitalWrite(der2,LOW);
-        } else {
-            if (chValue[2]<=.35){
-              
-              potenciaD = map(chValue[2]*100,35,0,0,255);
-              //Serial.print("Atras Derecha ");
-              //Serial.println(potenciaD);
-              analogWrite(PWM_PIND, potenciaD); 
-              digitalWrite(der1,LOW);
-              digitalWrite(der2,HIGH);
-            }
-        }
-      }
+    ultimoModoManual = false;
 
-  }   
+    lee_ultrasonicos();
+
+    String mensaje = "";
+    if (Serial.available()) {
+      mensaje = Serial.readStringUntil('\n');
+      mensaje.trim();
+    }
+
+    if (LFD == 0 && LFI == 0) {
+      // Emergencia ultrasónica
+      if (LDD == 0 && LID == 1) {
+        vueltaIzquierda();
+      } else if (LDD == 1 && LID == 0) {
+        vueltaDerecha();
+      } else {
+        Serial.println("------ ALTO EMERGENCIA -------------");
+        digitalWrite(izq1, LOW); digitalWrite(izq2, LOW);
+        digitalWrite(der1, LOW); digitalWrite(der2, LOW);
+      }
+    } else {
+      // Libre al frente — usa LIDAR
+      if (mensaje == "F") {
+        analogWrite(PWM_PINI, potenciaI_frente);
+        analogWrite(PWM_PIND, potenciaD_frente);
+        digitalWrite(izq1, HIGH); digitalWrite(izq2, LOW);
+        digitalWrite(der1, HIGH); digitalWrite(der2, LOW);
+      } else if (mensaje == "L") {
+        vueltaIzquierda();
+      } else if (mensaje == "R") {
+        vueltaDerecha();
+      } else if (mensaje == "U") {
+        vueltaU();
+      } else {
+        digitalWrite(izq1, LOW); digitalWrite(izq2, LOW);
+        digitalWrite(der1, LOW); digitalWrite(der2, LOW);
+      }
+    }
+
+  } else {
+    // ── MODO MANUAL ────────────────────────────────────────────
+    if (!ultimoModoManual) {
+      Serial.println("CAMBIO A MANUAL");
+    }
+    ultimoModoManual = true;
+
+    Serial.println("MANUAL");
+    while (Serial.available()) Serial.read();
+    control = 0;
+
+    // Motor izquierdo
+    if (chValue[1] > .35 && chValue[1] < .65) {
+      digitalWrite(izq1, LOW); digitalWrite(izq2, LOW);
+      analogWrite(PWM_PINI, 0);
+    } else if (chValue[1] > .65) {
+      potenciaI = map(chValue[1] * 100, 65, 100, 0, 255);
+      analogWrite(PWM_PINI, potenciaI);
+      digitalWrite(izq1, HIGH); digitalWrite(izq2, LOW);
+    } else if (chValue[1] < .35) {
+      potenciaI = map(chValue[1] * 100, 35, 0, 0, 255);
+      analogWrite(PWM_PINI, potenciaI);
+      digitalWrite(izq1, LOW); digitalWrite(izq2, HIGH);
+    }
+
+    // Motor derecho
+    if (chValue[2] > .35 && chValue[2] < .65) {
+      digitalWrite(der1, LOW); digitalWrite(der2, LOW);
+      analogWrite(PWM_PIND, 0);
+    } else if (chValue[2] > .65) {
+      potenciaD = map(chValue[2] * 100, 65, 100, 0, 255);
+      analogWrite(PWM_PIND, potenciaD);
+      digitalWrite(der1, HIGH); digitalWrite(der2, LOW);
+    } else if (chValue[2] <= .35) {
+      potenciaD = map(chValue[2] * 100, 35, 0, 0, 255);
+      analogWrite(PWM_PIND, potenciaD);
+      digitalWrite(der1, LOW); digitalWrite(der2, HIGH);
+    }
+  }
 }
-
 //imprime al puerto serial los valores leidos en los canales del control remoto 
 void printChannel()
 {
   for(int iChannel = 0; iChannel < 6; iChannel++)
   {
-    Serial.print("Ch #");
-    Serial.print(iChannel);
-    Serial.print(": ");
-    Serial.println(chValue[iChannel]);
+    //Serial.print("Ch #");
+    //Serial.print(iChannel);
+    //Serial.print(": ");
+    //Serial.println(chValue[iChannel]);
   };
-  Serial.println("------------");
+  //Serial.println("------------");
   //delay(500);
 }
 
@@ -426,7 +493,7 @@ long ultra(int trigPin,int echoPin){
 void lee_ultrasonicos()
 {
   //  Distancia Ultrasonicos en cm 
-    Serial.println("entra a leer");
+    //Serial.println("entra a leer");
     MIT = ultra(trig_it,echo_it);
     delay(5);
     MFI = ultra(trig_fi,echo_fi);
@@ -460,6 +527,7 @@ void lee_ultrasonicos()
     }else{
       LFD=0;
     }
+    //logico Derecho Delatanetro
     if(MDD>LL){
       LDD=1;
     }else{
@@ -508,7 +576,6 @@ void enviar_datos_sensores()
 
 void loop()
 {
-
   //lee los canales del control remoto 
   for(int iChannel = 0; iChannel < 6; iChannel++){
     readChannel(iChannel);

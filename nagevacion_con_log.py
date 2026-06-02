@@ -24,7 +24,7 @@ class ObstacleAvoidance(Node):
         super().__init__('obstacle_avoidance')
 
         # Definicion de parametros que usara el RPLIDAR
-        self.declare_parameter('min_distance_fr', 0.54)  # en metros (esta es la medida mas importante ya que es en donde se basa de cuando girar y cuando no)
+        self.declare_parameter('min_distance_fr', 0.6)  # en metros (esta es la medida mas importante ya que es en donde se basa de cuando girar y cuando no)
         self.declare_parameter('max_distance_fr', 1.2)   # en metros
         self.declare_parameter('min_distance_ld', 0.4)  # en metros
         self.declare_parameter('max_distance_ld', 0.6)  # en metros
@@ -32,7 +32,7 @@ class ObstacleAvoidance(Node):
         self.max_distance_fr = self.get_parameter('max_distance_fr').value
         self.min_distance_ld = self.get_parameter('min_distance_ld').value
         self.max_distance_ld = self.get_parameter('max_distance_ld').value
-        self.modo = "Manual"
+        self.modo = ""
 
 
         # Crea el registro de los comandos usados durante el recorrido
@@ -174,6 +174,7 @@ class ObstacleAvoidance(Node):
                             self.get_logger().warning(f"JSON invalido: {line}")
 
                     elif line == "CAMBIO A AUTONOMO":
+                        print("-----------------Autonomo-----------------")
                         self.modo = "Autonomo"
                         self.last_cmd = None
                         self.last_state = ""
@@ -181,7 +182,11 @@ class ObstacleAvoidance(Node):
                         time.sleep(0.3)
                         self.get_logger().info("Modo: Autonomo")
                     elif line == "CAMBIO A MANUAL":
+                        print("-----------------Manual-------------------")
                         self.modo="Manual"
+                        self.last_cmd = None
+                        self.last_state = None
+                        self.arduino_busy = None
                         self.get_logger().info("Modo: Manual")
 
                     # Filtra el JSON
@@ -394,7 +399,7 @@ class ObstacleAvoidance(Node):
         self.dist_left = float(dist_left)
         self.dist_right = float(dist_right)
         
-        while self.modo == "Autonomo":
+        if self.modo == "Autonomo":
             # Vuelta en U
             if (dist_front < self.min_distance_fr and dist_right < self.min_distance_ld and dist_left < self.min_distance_ld):
 
