@@ -1,7 +1,5 @@
 #include <Servo.h>
 
-int control = 0;
-
 Servo servo_yB;
 
 // definicion de los puertos de entrada 
@@ -9,16 +7,18 @@ Servo servo_yB;
 int rcPins[6] = {25,29,27,31,33,35};
 // ??????????????
 int ReDig[8] = {0,0,0,0,0,0,0,0};
+
 // definicion de salidas para control de los relevadores
 int izq1=10;
 int izq2=9;
 int der1=15;
 int der2=16;
+
 // parametros enviados desde python
 // Variables de distancia minima a paredes 
 int LL = 25;                        // Distancia lateral
 int LD = 25;                        // Distancia delantera
-int muestra = 0;
+
 // Potencias para motores 
 int potenciaI_frente = 100;
 int potenciaD_frente = potenciaI_frente;
@@ -27,15 +27,15 @@ int potenciaD_giro = potenciaI_giro;
 int potenciaI = 0;
 int potenciaD = 0;
 
-bool ultimoModoManual = 0;
+bool ultimoModoManual = false; // Estado de la palanca para cambiar de Manual a Autonomo (false = autonomo , true = manual)
+bool lidarActivo = false; // Estado actual del Lidar
 
-int servo_pinyB = 41;
-
+//int servo_pinyB = 41;
 // definicion de servos para la camara
-Servo serH;
-Servo serV;
-int hori = 13;
-int verti = 12;
+//Servo serH;
+//Servo serV;
+//int hori = 13;
+//int verti = 12;
 
 float chValue[6];
 
@@ -67,8 +67,6 @@ int PWM_PIND = 7;
 // variables para sensores ultrasonicos 
   long MIT,MID,MFI,MFD,MDD,MDT; // Mediciones de sensores ultrasonicos en centimetros 
   int  LIT,LID,LFI,LFD,LDD,LDT; // Valores logicos de lectura de sensores ultrasonicos
-
-
  
 const int pulseInDelay = 30000;   //20000;
 
@@ -105,10 +103,10 @@ void setup()
   pinMode(echo_dt, INPUT);
 
   // ???????????????????
-  serH.attach(hori);
-  serV.attach(verti);
+  //serH.attach(hori);
+  //serV.attach(verti);
 
-  servo_yB.attach(servo_pinyB);
+  //servo_yB.attach(servo_pinyB);
 }
 
 // Función para mapear un valor de un rango a otro rango
@@ -377,36 +375,52 @@ void control_motores()
     if (ultimoModoManual) {
       Serial.println("CAMBIO A AUTONOMO");
       while (Serial.available()) Serial.read();
-      control = 0;
     }
     ultimoModoManual = false;
 
     lee_ultrasonicos();
 
+    // Lee el comando que manda Python
     String mensaje = "";
     if (Serial.available()) {
       mensaje = Serial.readStringUntil('\n');
       mensaje.trim();
+
+      // Checa si es un mensaje de estado del LIDAR
+      if (mensaje == "LIDAR_ON") {
+        lidarActivo = true;
+        Serial.println("Lidar conectado");
+        mensaje = "";
+      } else if (mensaje == "LIDAR_OFF") {
+        lidarActivo = false;
+        Serial.println("Se perdio conexion con el Lidar");
+        mensaje = "";
+      }
     }
 
     if (LFD == 0 && LFI == 0) {
-      // Emergencia ultrasónica
+      // ── Emergencia ultrasónica — siempre tiene prioridad ──
       if (LDD == 0 && LID == 1) {
         vueltaIzquierda();
       } else if (LDD == 1 && LID == 0) {
         vueltaDerecha();
       } else {
         Serial.println("------ ALTO EMERGENCIA -------------");
-        digitalWrite(izq1, LOW); digitalWrite(izq2, LOW);
-        digitalWrite(der1, LOW); digitalWrite(der2, LOW);
+        digitalWrite(izq1, LOW); 
+        digitalWrite(izq2, LOW);
+        digitalWrite(der1, LOW); 
+        digitalWrite(der2, LOW);
       }
-    } else {
-      // Libre al frente — usa LIDAR
+
+    } else if (lidarActivo) {
+      // ── LIDAR activo — sigue sus comandos ──
       if (mensaje == "F") {
         analogWrite(PWM_PINI, potenciaI_frente);
         analogWrite(PWM_PIND, potenciaD_frente);
-        digitalWrite(izq1, HIGH); digitalWrite(izq2, LOW);
-        digitalWrite(der1, HIGH); digitalWrite(der2, LOW);
+        digitalWrite(izq1, HIGH); 
+        digitalWrite(izq2, LOW);
+        digitalWrite(der1, HIGH); 
+        digitalWrite(der2, LOW);
       } else if (mensaje == "L") {
         vueltaIzquierda();
       } else if (mensaje == "R") {
@@ -414,8 +428,33 @@ void control_motores()
       } else if (mensaje == "U") {
         vueltaU();
       } else {
-        digitalWrite(izq1, LOW); digitalWrite(izq2, LOW);
-        digitalWrite(der1, LOW); digitalWrite(der2, LOW);
+        // Sin comando — alto
+        digitalWrite(izq1, LOW); 
+        digitalWrite(izq2, LOW);
+        digitalWrite(der1, LOW); 
+        digitalWrite(der2, LOW);
+      }
+
+    } else {
+      // ── LIDAR desactivado — navega con ultrasonicos ──
+      if (LIT == 1 && LID == 1 && LDD == 1 && LDT == 1) {
+        // Todo despejado — avanza
+        analogWrite(PWM_PINI, potenciaI_frente);
+        analogWrite(PWM_PIND, potenciaD_frente);
+        digitalWrite(izq1, HIGH); 
+        digitalWrite(izq2, LOW);
+        digitalWrite(der1, HIGH); 
+        digitalWrite(der2, LOW);
+      } else if (LDD == 0 && LID == 1) {
+        vueltaIzquierda();
+      } else if (LDD == 1 && LID == 0) {
+        vueltaDerecha();
+      } else {
+        // Sin salida clara — para
+        digitalWrite(izq1, LOW); 
+        digitalWrite(izq2, LOW);
+        digitalWrite(der1, LOW); 
+        digitalWrite(der2, LOW);
       }
     }
 
@@ -428,34 +467,39 @@ void control_motores()
 
     Serial.println("MANUAL");
     while (Serial.available()) Serial.read();
-    control = 0;
 
-    // Motor izquierdo
+    // Motores izquierdos
     if (chValue[1] > .35 && chValue[1] < .65) {
-      digitalWrite(izq1, LOW); digitalWrite(izq2, LOW);
+      digitalWrite(izq1, LOW); 
+      digitalWrite(izq2, LOW);
       analogWrite(PWM_PINI, 0);
     } else if (chValue[1] > .65) {
       potenciaI = map(chValue[1] * 100, 65, 100, 0, 255);
       analogWrite(PWM_PINI, potenciaI);
-      digitalWrite(izq1, HIGH); digitalWrite(izq2, LOW);
+      digitalWrite(izq1, HIGH); 
+      digitalWrite(izq2, LOW);
     } else if (chValue[1] < .35) {
       potenciaI = map(chValue[1] * 100, 35, 0, 0, 255);
       analogWrite(PWM_PINI, potenciaI);
-      digitalWrite(izq1, LOW); digitalWrite(izq2, HIGH);
+      digitalWrite(izq1, LOW); 
+      digitalWrite(izq2, HIGH);
     }
 
-    // Motor derecho
+    // Motores derechos
     if (chValue[2] > .35 && chValue[2] < .65) {
-      digitalWrite(der1, LOW); digitalWrite(der2, LOW);
+      digitalWrite(der1, LOW); 
+      digitalWrite(der2, LOW);
       analogWrite(PWM_PIND, 0);
     } else if (chValue[2] > .65) {
       potenciaD = map(chValue[2] * 100, 65, 100, 0, 255);
       analogWrite(PWM_PIND, potenciaD);
-      digitalWrite(der1, HIGH); digitalWrite(der2, LOW);
+      digitalWrite(der1, HIGH); 
+      digitalWrite(der2, LOW);
     } else if (chValue[2] <= .35) {
       potenciaD = map(chValue[2] * 100, 35, 0, 0, 255);
       analogWrite(PWM_PIND, potenciaD);
-      digitalWrite(der1, LOW); digitalWrite(der2, HIGH);
+      digitalWrite(der1, LOW); 
+      digitalWrite(der2, HIGH);
     }
   }
 }
