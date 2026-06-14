@@ -14,6 +14,7 @@ import json
 import os
 import threading
 from datetime import datetime
+import cv2
 
 class ObstacleAvoidance(Node): 
 
@@ -94,6 +95,110 @@ class ObstacleAvoidance(Node):
             'cmd_vel',
             10
         )
+
+        # Indices de las camaras USB (0 y 1 por defecto, cambiar si es necesario)
+        self._cam_index_1 = 0
+        self._cam_index_2 = 2
+        self._camera_running = True
+        self._camera_thread = threading.Thread(
+            target=self._camera_loop,
+            daemon=True
+        )
+        self._camera_thread.start()
+
+    # Camaras
+    def _camera_loop(self):
+        cap1 = cv2.VideoCapture(self._cam_index_1)
+        cap2 = cv2.VideoCapture(self._cam_index_2)
+
+        if not cap1.isOpened():
+            self.get_logger().error(
+                f"No se pudo abrir camara {self._cam_index_1}"
+            )
+        if not cap2.isOpened():
+            self.get_logger().error(
+                f"No se pudo abrir camara {self._cam_index_2}"
+            )
+
+        while self._camera_running:
+            frames = []
+
+            if cap1.isOpened():
+                ret1, frame1 = cap1.read()
+                if ret1:
+                    # Etiqueta en la imagen de la camara 1
+                    cv2.putText(
+                        frame1, "Camara 1",
+                        (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                        1.0, (0, 255, 0), 2
+                    )
+                    frames.append(frame1)
+                else:
+                    # Si falla la lectura, mostrar cuadro negro con aviso
+                    blank = np.zeros((480, 640, 3), dtype=np.uint8)
+                    cv2.putText(
+                        blank, "Camara 1 sin senal",
+                        (80, 240), cv2.FONT_HERSHEY_SIMPLEX,
+                        1.0, (0, 0, 255), 2
+                    )
+                    frames.append(blank)
+            else:
+                blank = np.zeros((480, 640, 3), dtype=np.uint8)
+                cv2.putText(
+                    blank, "Camara 1 no disponible",
+                    (60, 240), cv2.FONT_HERSHEY_SIMPLEX,
+                    1.0, (0, 0, 255), 2
+                )
+                frames.append(blank)
+
+            if cap2.isOpened():
+                ret2, frame2 = cap2.read()
+                if ret2:
+                    # Etiqueta en la imagen de la camara 2
+                    cv2.putText(
+                        frame2, "Camara 2",
+                        (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                        1.0, (0, 255, 0), 2
+                    )
+                    frames.append(frame2)
+                else:
+                    blank = np.zeros((480, 640, 3), dtype=np.uint8)
+                    cv2.putText(
+                        blank, "Camara 2 sin senal",
+                        (80, 240), cv2.FONT_HERSHEY_SIMPLEX,
+                        1.0, (0, 0, 255), 2
+                    )
+                    frames.append(blank)
+            else:
+                blank = np.zeros((480, 640, 3), dtype=np.uint8)
+                cv2.putText(
+                    blank, "Camara 2 no disponible",
+                    (60, 240), cv2.FONT_HERSHEY_SIMPLEX,
+                    1.0, (0, 0, 255), 2
+                )
+                frames.append(blank)
+
+            # Igualar altura de ambos frames antes de concatenar
+            h1, w1 = frames[0].shape[:2]
+            h2, w2 = frames[1].shape[:2]
+            if h1 != h2:
+                # Redimensionar el segundo frame para que coincida con el primero
+                frames[1] = cv2.resize(frames[1], (w1, h1))
+
+            # Unir las dos camaras horizontalmente en una sola ventana
+            combined = np.hstack(frames)
+            cv2.imshow("Camaras del Robot", combined)
+
+            # Salir con 'q' sin cerrar el nodo ROS2
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                self.get_logger().info(
+                    "Ventana de camaras cerrada por el usuario"
+                )
+                break
+
+        cap1.release()
+        cap2.release()
+        cv2.destroyAllWindows()
 
     # Se definen los sectores del RPLIDAR para guardarlos en el archivo JSON
     def get_sector(self, msg, angle_start_deg, angle_end_deg):
