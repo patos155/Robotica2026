@@ -546,7 +546,6 @@ class ObstacleAvoidance(Node):
             self.timeout_timer.cancel()
 
         if self.ser:
-            self.ser.write(b'LIDAR_OFF\n')
             time.sleep(0.2)
             self.ser.write(b'S\n')
             self.ser.close()
@@ -558,16 +557,21 @@ class ObstacleAvoidance(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = ObstacleAvoidance()
+    keyboard_interrupt = False
 
     try:
         rclpy.spin(node)
 
     except KeyboardInterrupt:
+        keyboard_interrupt = True
         node.send_command('S')
         if node.ser:
-            node.ser.write(b'LIDAR_OFF\n')
+            node.ser.write(b'S\n')
 
     finally:
+        if not keyboard_interrupt:
+            if node.ser:
+                node.ser.write(b'LIDAR_OFF\n')
         node.destroy_node()
         rclpy.shutdown()
 
