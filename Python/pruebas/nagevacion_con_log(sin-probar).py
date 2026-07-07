@@ -552,7 +552,6 @@ class ObstacleAvoidance(Node):
 
         super().destroy_node()
 
-
 # Punto de entrada principal del nodo ROS2
 def main(args=None):
     rclpy.init(args=args)
