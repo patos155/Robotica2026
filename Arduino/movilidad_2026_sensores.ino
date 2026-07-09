@@ -7,25 +7,22 @@ Servo servo_yB;
 // definicion de los puertos de entrada 
 // control remoto 
 int rcPins[6] = {25,29,27,31,33,35};
-// ??????????????
-int ReDig[8] = {0,0,0,0,0,0,0,0};
 // definicion de salidas para control de los relevadores
 int izq1=10;
 int izq2=9;
 int der1=15;
 int der2=16;
 // parametros enviados desde python
-  // Variables de distancia minima a paredes 
-  int LL = 25;                        // Distancia lateral
-  int LD = 25;                        // Distancia delantera
-  int muestra = 0;
-  // Potencias para motores 
-  int potenciaI_frente = 150;
-  int potenciaD_frente = potenciaI_frente;
-  int potenciaI_giro = 200;
-  int potenciaD_giro = potenciaI_giro;
-  int potenciaI = 0;
-  int potenciaD = 0;
+// Variables de distancia minima a paredes 
+int LL = 25;                        // Distancia lateral
+int LD = 25;                        // Distancia delantera
+// Potencias para motores 
+int potenciaI_frente = 150;
+int potenciaD_frente = potenciaI_frente;
+int potenciaI_giro = 200;
+int potenciaD_giro = potenciaI_giro;
+int potenciaI = 0;
+int potenciaD = 0;
 
 int servo_pinyB = 41;
 
@@ -43,32 +40,30 @@ int PWM_PIND = 7;
 
 
 /* Ultrasónicos  */
-  // conexiones de triger y echo Izquierdo trasero 
-  const int trig_it = 41;           
-  const int echo_it = 42;
-  // conexiones de triger y echo Izquierdo delantero
-  const int trig_id = 5;
-  const int echo_id = 4;
-  // conexiones de triger y echo delantero izquierdo
-  const int trig_fi = 19;
-  const int echo_fi = 20;
-  // conexiones de triger y echo delantero derecho
-  const int trig_fd = 8;
-  const int echo_fd = 40;
-  // conexiones de triger y echo derecho delantero
-  const int trig_dd = 21;
-  const int echo_dd = 22;
-  // conexiones de triger y echo derecho trasero
-  const int trig_dt = 23;
-  const int echo_dt = 24;
+// conexiones de triger y echo Izquierdo trasero 
+const int trig_it = 41;           
+const int echo_it = 42;
+// conexiones de triger y echo Izquierdo delantero
+const int trig_id = 5;
+const int echo_id = 4;
+// conexiones de triger y echo delantero izquierdo
+const int trig_fi = 19;
+const int echo_fi = 20;
+// conexiones de triger y echo delantero derecho
+const int trig_fd = 8;
+const int echo_fd = 40;
+// conexiones de triger y echo derecho delantero
+const int trig_dd = 21;
+const int echo_dd = 22;
+// conexiones de triger y echo derecho trasero
+const int trig_dt = 23;
+const int echo_dt = 24;
 
 // variables para sensores ultrasonicos 
-  long MIT,MID,MFI,MFD,MDD,MDT; // Mediciones de sensores ultrasonicos en centimetros 
-  int  LIT,LID,LFI,LFD,LDD,LDT; // Valores logicos de lectura de sensores ultrasonicos
+long MIT,MID,MFI,MFD,MDD,MDT; // Mediciones de sensores ultrasonicos en centimetros 
+int  LIT,LID,LFI,LFD,LDD,LDT; // Valores logicos de lectura de sensores ultrasonicos
 
-
- 
-const int pulseInDelay = 30000;   //20000;
+const int pulseInDelay = 30000;  //20000;
 
 long potenciaAutomaticaMaxima = 1;
 long potenciaAutomatica = 0.8;
