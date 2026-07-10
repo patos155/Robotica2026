@@ -1,36 +1,33 @@
-#ifndef sensors_config_h
-#define sensors_config_h
+#pragma once
 
 #include <Arduino.h>
 
 // Variables de distancia minima a paredes 
-const int LL = 25;                        // Distancia lateral
-const int LD = 25;                        // Distancia delantera
+constexpr int lateralDistance = 25;                        // Distancia lateral
+constexpr int frontDistance = 25;                         // Distancia delantera
 
-/* Ultrasónicos  */
+// Sensores ultrasonicos
 // conexiones de triger y echo Izquierdo trasero 
-const int trig_it = 41;           
-const int echo_it = 42;
+constexpr int leftRearTrigger = 41;           
+constexpr int leftRearEcho = 42;
 // conexiones de triger y echo Izquierdo delantero
-const int trig_id = 5;
-const int echo_id = 4;
+constexpr int leftFrontTrigger = 5;
+constexpr int leftFrontEcho = 4;
 // conexiones de triger y echo delantero izquierdo
-const int trig_fi = 19;
-const int echo_fi = 20;
+constexpr int frontLeftTrigger = 19;
+constexpr int frontLeftEcho = 20;
 // conexiones de triger y echo delantero derecho
-const int trig_fd = 8;
-const int echo_fd = 40;
+constexpr int frontRightTrigger = 8;
+constexpr int frontRightEcho = 40;
 // conexiones de triger y echo derecho delantero
-const int trig_dd = 21;
-const int echo_dd = 22;
+constexpr int rightFrontTrigger = 21;
+constexpr int rightFrontEcho = 22;
 // conexiones de triger y echo derecho trasero
-const int trig_dt = 23;
-const int echo_dt = 24;
+constexpr int rightRearTrigger = 23;
+constexpr int rightRearEcho = 24;
 
 // variables para sensores ultrasonicos 
-long MIT,MID,MFI,MFD,MDD,MDT; // Mediciones de sensores ultrasonicos en centimetros 
-int  LIT,LID,LFI,LFD,LDD,LDT; // Valores logicos de lectura de sensores ultrasonicos
+constexpr long LRM,LRM,FLM,FRM,RFM,RRM; // Mediciones de sensores ultrasonicos en centimetros 
+constexpr int LRL,LFL,FLL,FRL,RFL,RRL; // Valores logicos de lectura de sensores ultrasonicos
 
-const int pulseInDelay = 30000;
-
-#endif
+constexpr int pulseInDelay = 30000;

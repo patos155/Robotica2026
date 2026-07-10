@@ -18,7 +18,7 @@ class ObstacleAvoidance(Node):
         self.declare_parameter('min_distance_fr', 0.65)
         self.declare_parameter('max_distance_fr', 1.1)
         self.declare_parameter('min_distance_ld', 0.7)
-        self.declare_parameter('max_distance_ld', 0.8  )
+        self.declare_parameter('max_distance_ld', 0.8)
 
         self.min_distance_fr = self.get_parameter('min_distance_fr').value
         self.max_distance_fr = self.get_parameter('max_distance_fr').value

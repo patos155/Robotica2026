@@ -1,27 +1,23 @@
-#ifndef motors_config_h
-#define motors_config_h
-
+#pragma once
 #include <Arduino.h>
 
 //pines para control de velocidad de arranque 
-const int PWM_PINI = 6;
-const int PWM_PIND = 7;
+constexpr int PIN_PWM_LEFT = 6;
+constexpr int PIN_PWM_RIGHT = 7;
 
 // definicion de salidas para control de los relevadores
-const int left1=10;
-const int left2=9;
-const int right1=15;
-const int right2=16;
+constexpr int left1=10;
+constexpr int left2=9;
+constexpr int right1=15;
+constexpr int right2=16;
 
-long maxAutomaticPower = 1;
-long automaticPower = 0.8;
+constexpr long maxAutomaticPower = 1;
+constexpr long automaticPower = 0.8;
 
 // Potencias para motores 
-const int speedLeftFront = 150;
-const int speedRightFront = speedLeftFront;
-const int speedLeftTurn = 200;
-const int speedRightTurn = speedLeftTurn;
-const int speedLeft = 0;
-const int speedRight = 0;
-
-#endif
+constexpr int speedLeftFront = 150;
+constexpr int speedRightFront = speedLeftFront;
+constexpr int speedLeftTurn = 200;
+constexpr int speedRightTurn = speedLeftTurn;
+constexpr int speedLeft = 0;
+constexpr int speedRight = 0;

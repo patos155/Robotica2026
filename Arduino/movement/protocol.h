@@ -1,7 +1,4 @@
-#ifndef protocol_h
-#define protocol_h
+#pragma once
 
 #include <Arduino.h>
 
-
-#endif
