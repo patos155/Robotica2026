@@ -24,13 +24,13 @@ int potenciaD_giro = potenciaI_giro;
 int potenciaI = 0;
 int potenciaD = 0;
 
-int servo_pinyB = 41;
+// int servo_pinyB = 41;
 
 // definicion de servos para la camara
-Servo serH;
-Servo serV;
-int hori = 13;
-int verti = 12;
+// Servo serH;
+// Servo serV;
+// int hori = 13;
+// int verti = 12;
 
 float chValue[6];
 
@@ -97,11 +97,11 @@ void setup()
   pinMode(trig_dt, OUTPUT);
   pinMode(echo_dt, INPUT);
 
-  // ???????????????????
-  serH.attach(hori);
-  serV.attach(verti);
+  // // ???????????????????
+  // serH.attach(hori);
+  // serV.attach(verti);
 
-  servo_yB.attach(servo_pinyB);
+  // servo_yB.attach(servo_pinyB);
 }
 
 // Función para mapear un valor de un rango a otro rango
@@ -358,12 +358,6 @@ void vueltaU()
   Serial.println("T");
 
 }
-
-
-
-
-
-
 
 //decodifica las lecturas del control remoto para controlar los motores  
 void control_motores()

@@ -27,6 +27,10 @@ const int echo_dd = 22;
 const int trig_dt = 23;
 const int echo_dt = 24;
 
+// variables para sensores ultrasonicos 
+long MIT,MID,MFI,MFD,MDD,MDT; // Mediciones de sensores ultrasonicos en centimetros 
+int  LIT,LID,LFI,LFD,LDD,LDT; // Valores logicos de lectura de sensores ultrasonicos
+
 const int pulseInDelay = 30000;
 
 #endif
