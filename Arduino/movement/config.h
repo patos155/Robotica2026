@@ -8,6 +8,7 @@
 #include <Arduino.h>
 
 constexpr int PINS_RC[6] = {25,29,27,31,33,35};
+constexpr int pulseInDelay = 30000;
 
 //pines para control de velocidad de arranque 
 constexpr int PIN_PWM_LEFT = 6;
@@ -53,7 +54,3 @@ constexpr int speedLeftFront = 150;
 constexpr int speedRightFront = speedLeftFront;
 constexpr int speedLeftTurn = 200;
 constexpr int speedRightTurn = speedLeftTurn;
-constexpr int speedLeft = 0;
-constexpr int speedRight = 0;
-
-constexpr int pulseInDelay = 30000;

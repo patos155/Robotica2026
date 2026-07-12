@@ -39,12 +39,12 @@ void UltrasonicArray::update() {
     _rrm = readUltra(PIN_RIGHT_REAR_TRIGGER, PIN_RIGHT_REAR_ECHO);
 
     // Devuelve "true" si el camino esta libre, false si hay obstaculo
-    _lrl = (_lrm > lateralDistance);
-    _lfl = (_lfm > lateralDistance);
-    _fll = (_flm > frontDistance);
-    _frl = (_frm > frontDistance);
-    _rfl = (_rfm > lateralDistance);
-    _rrl = (_rrm > lateralDistance);
+    _lrl = (_lrm > lateralDistance) ? 1 : 0;
+    _lfl = (_lfm > lateralDistance) ? 1 : 0;
+    _fll = (_flm > frontDistance) ? 1 : 0;
+    _frl = (_frm > frontDistance) ? 1 : 0;
+    _rfl = (_rfm > lateralDistance) ? 1 : 0;
+    _rrl = (_rrm > lateralDistance) ? 1 : 0;
 
 };
 
@@ -54,12 +54,11 @@ long UltrasonicArray::_readUltra(int trigPin, int echoPin) {
     delayMicroseconds(10);
     digitalWrite(trigPin, LOW);
     
-    long duration = pulseIn(echoPin, HIGH, PULSE_IN_DELAY);
+    long duration = pulseIn(echoPin, HIGH, pulseInDelay);
     
-    // Si la lectura es 0 significa que se supero el tiempo de espera (Timeout)
-    // Retornamos una distancia alta (999 cm) para indicar que el camino esta despejado
+    // Retornamos una distancia alta (200 cm) para indicar que el camino esta despejado
     if (duration == 0) {
-        return 999; 
+        return 200; 
     }
     
     // Convertir el tiempo en distancia (cm)

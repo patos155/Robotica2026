@@ -32,4 +32,5 @@ class UltrasonicArray {
         long _lrm,_lfm,_flm,_frm,_rfm,_rrm; // Mediciones de sensores ultrasonicos en centimetros 
         bool _lrl,_lfl,_fll,_frl,_rfl,_rrl; // Valores logicos de lectura de sensores ultrasonicos
 
+        long _readUltra(pinTrig, pinEcho);
 };
