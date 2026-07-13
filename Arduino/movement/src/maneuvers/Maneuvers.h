@@ -9,18 +9,20 @@
 #include "motors.h"
 #include "UltrasonicArray.h"
 
-class Maneuvers() {
+class Maneuvers {
     public:
         void begin(Motors * motorsInstance, UltrasonicArray * sensorsInstance);
+        void update();
         void turnLeft();
         void turnRight();
         void uTurn();
-        constexpr int delayStop = 1000;
-        constexpr int delayTurn = 1500;
-        constexpr int delayForward = 1500;
-        constexpr sequenceComplete = "T";
+        
+        static constexpr int delayStop = 1000;
+        static constexpr int delayTurn = 1500;
+        static constexpr int delayForward = 1500;
+        static constexpr int delayUTurn = 4000;
 
     private:
         Motors* _motors;
         UltrasonicArray* _sensors;
-}
+};
