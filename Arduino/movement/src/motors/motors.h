@@ -18,5 +18,5 @@ class Motors {
         int _currentRightSpeed;
 
         // Metodo privado para interactuar con el puente H
-        void _setMotorsPins(int speed, int pinPWM, int pinRelay1, int pintRelay2)
+        void _setMotorsPins(int speed, int pinPWM, int pinRelay1, int pintRelay2);
 }

@@ -11,16 +11,16 @@ void  Motors::begin(){
     pinMode(PIN_RELAY_RIGHT_2, OUTPUT);
 
     stop();
-};
+}
 
 void Motors::move(int leftSpeed, int rightSpeed) {
     _currentLeftSpeed = leftSpeed;
     _currentRightSpeed = rightSpeed;
 
-    // Enviar las velocidades reales a los pines físicos usando el método privado
+    // Enviar las velocidades reales a los pines fisicos
     _setMotorsPins(_currentLeftSpeed, PIN_PWM_LEFT, PIN_RELAY_LEFT_1,  PIN_RELAY_LEFT_2);
     _setMotorsPins(_currentRightSpeed, PIN_PWM_RIGHT, PIN_RELAY_RIGHT_1, PIN_RELAY_RIGHT_2);
-};
+}
 
 void Motors::stop() {
     move(0, 0);

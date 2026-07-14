@@ -105,7 +105,7 @@ class ObstacleAvoidance(Node):
                     line = self.ser.readline().decode('utf-8').strip()
                     
                     # Detectar fin de secuencia
-                    if line == 'T':
+                    if line == 'DONE':
                         self.arduino_busy = False
                         self.last_state = ""
                         self.last_cmd = None

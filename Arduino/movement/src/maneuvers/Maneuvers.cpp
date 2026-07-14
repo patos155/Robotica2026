@@ -1,15 +1,10 @@
 #include "Maneuvers.h"
 #include "config.h"
 
-void Maneuvers::begin(Motors * motorsInstance, UltrasonicArray * sensorsInstance) {
+void Maneuvers::begin(Motors * motorsInstance, UltrasonicArray * sensorsInstance, Communication* comm) {
     _motors = motorsInstance;
     _sensors = sensorsInstance;
-}
-
-void Maneuvers::update() {
-    if (_sensors->isFLL() == 0 && _sensors->isFRL() == 0) {
-        _motors->stop();
-    }
+    _comm = comm;
 }
 
 // Giro hacia la derecha
@@ -24,6 +19,7 @@ void Maneuvers::turnRight() {
     }
     _motors->stop(); delay(delayStop);
     _motors->move(speedLeftFront, speedRightFront); delay(delayForward);
+    _comm->sendSecuenceDone();
 }
 
 // Giro hacia la izquierda
@@ -37,6 +33,7 @@ void Maneuvers::turnLeft(){
     }
     _motors->stop(); delay(delayStop);
     _motors->move(speedLeftFront, speedRightFront); delay(delayForward);
+    _comm->sendSecuenceDone();
 }
 
 // Vuelta en U
@@ -50,4 +47,5 @@ void Maneuvers::uTurn(){
     }
     _motors->stop(); delay(delayStop);
     _motors->move(speedLeftFront, speedRightFront); delay(delayForward);
+    _comm->sendSecuenceDone();
 }

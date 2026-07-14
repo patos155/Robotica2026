@@ -22,7 +22,7 @@ void UltrasonicArray::begin() {
 
     pinMode(PIN_RIGHT_REAR_TRIGGER, OUTPUT);
     pinMode(PIN_RIGHT_REAR_ECHO, INPUT);
-};
+}
 
 void UltrasonicArray::update() {
     // Realizar las mediciones fisicas en centimetros
@@ -46,7 +46,7 @@ void UltrasonicArray::update() {
     _rfl = (_rfm > lateralDistance) ? 1 : 0;
     _rrl = (_rrm > lateralDistance) ? 1 : 0;
 
-};
+}
 
 long UltrasonicArray::_readUltra(int trigPin, int echoPin) {
     // Generar el pulso de disparo (Trigger)
@@ -63,4 +63,4 @@ long UltrasonicArray::_readUltra(int trigPin, int echoPin) {
     
     // Convertir el tiempo en distancia (cm)
     return duration / 59;
-};
+}

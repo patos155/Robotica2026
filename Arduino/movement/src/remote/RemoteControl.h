@@ -11,7 +11,6 @@ class Remote {
     public:
         void begin();
         void update();
-        // Getters para que el archivo principal sepa a que velocidad ir
         int getLeftTargetSpeed() const;
         int getRightTargetSpeed() const;
         bool isAutonomousMode() const;
