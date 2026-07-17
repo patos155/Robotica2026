@@ -1,0 +1,11 @@
+# ===== PlatformIO (firmware/motors, firmware/sensors) =====
+.pio/
+.pioenvs/
+.piolibdeps/
+
+# ===== Editores / SO =====
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+*.swp
