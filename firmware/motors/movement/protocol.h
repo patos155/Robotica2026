@@ -11,5 +11,5 @@ namespace Cmd{
 
 // Definicion de estados enviados del Arduino
 namespace Status {
-    constexpr char* const Done      = "DONE";
+    const char* const Done      = "DONE";
 }
