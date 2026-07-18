@@ -28,15 +28,15 @@ void Motors::stop() {
 
 void Motors::_setMotorsPins(int speed, int pinPWM, int pinRelay1, int pinRelay2) {
     if (speed > 0) {
-        digitalWrite(pinRelay1, HIGH);
-        digitalWrite(pinRelay2, LOW);
+        digitalWrite(pinRelay1, MOT_FORWARD);
+        digitalWrite(pinRelay2, MOT_STOP);
     } else if (speed < 0) {
-        digitalWrite(pinRelay1, LOW);
-        digitalWrite(pinRelay2, HIGH);
+        digitalWrite(pinRelay1, MOT_STOP);
+        digitalWrite(pinRelay2, MOT_FORWARD);
         speed = -speed; 
     } else {
-        digitalWrite(pinRelay1, LOW);
-        digitalWrite(pinRelay2, LOW);
+        digitalWrite(pinRelay1, MOT_STOP);
+        digitalWrite(pinRelay2, MOT_STOP);
     }
 
     // Limitar que la velocidad nunca supere el rango de 0-255 de los timers de Arduino
