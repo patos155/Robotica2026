@@ -8,7 +8,7 @@ void Communication::begin(long baudRate) {
 
 String Communication::receiveCommand() {
     // Recibe del python los comandos F = Adelante, L = Izquierda, R = Derecha, U = Vuelta en U, S = alto
-    if (Serial.avaliable()) {
+    if (Serial.available()) {
         String rawJson = Serial.readStringUntil('\n');
 
         if (rawJson.indexOf(Cmd::cmdForward) != -1) return "F";
@@ -41,7 +41,7 @@ void Communication::sendStatusDone() {
     Serial.println("\"}");
 }
 
-void Communication::sendMode(constexpr char* mode) {
+void Communication::sendMode(String mode) {
     // Notifica a Python cuando cambian con el switch del control
     Serial.print("{\"type\": \"mode\", \"value\": \"");
     Serial.print(mode);
