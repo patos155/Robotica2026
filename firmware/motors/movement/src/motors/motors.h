@@ -19,4 +19,4 @@ class Motors {
 
         // Metodo privado para interactuar con el puente H
         void _setMotorsPins(int speed, int pinPWM, int pinRelay1, int pintRelay2);
-}
+};

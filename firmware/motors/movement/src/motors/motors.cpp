@@ -26,7 +26,7 @@ void Motors::stop() {
     move(0, 0);
 }
 
-void Motors::_setMotorPins(int speed, int pinPWM, int pinRelay1, int pinRelay2) {
+void Motors::_setMotorsPins(int speed, int pinPWM, int pinRelay1, int pinRelay2) {
     if (speed > 0) {
         digitalWrite(pinRelay1, HIGH);
         digitalWrite(pinRelay2, LOW);
