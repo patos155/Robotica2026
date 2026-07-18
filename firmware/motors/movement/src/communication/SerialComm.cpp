@@ -1,4 +1,4 @@
-#include "./communication/SerialComm.h"
+#include "../communication/SerialComm.h"
 #include "protocol.h"
 
 void Communication::begin(long baudRate) {
