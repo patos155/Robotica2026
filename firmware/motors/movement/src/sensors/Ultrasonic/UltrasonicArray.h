@@ -32,5 +32,5 @@ class UltrasonicArray {
         long _lrm,_lfm,_flm,_frm,_rfm,_rrm;
         bool _lrl,_lfl,_fll,_frl,_rfl,_rrl;
 
-        long _readUltra(pinTrig, pinEcho);
+        long _readUltra(int pinTrig, int pinEcho);
 };
