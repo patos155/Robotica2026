@@ -30,8 +30,7 @@ robot_rescate/
 │   ├── motors/      ← Arduino: motores, ultrasónicos, RC
 │   └── sensors/     ← Arduino: sensado ambiental
 ├── robot_ws/         ← workspace ROS2 (laptop del robot)
-├── dashboard/         ← interfaz web del operador (React)
-└── scripts/           ← verificación del repo completo
+└── dashboard/         ← interfaz web del operador (React)
 ```
 
 Cada carpeta de primer nivel tiene su propio `README.md` y `CONVENTIONS.md`.

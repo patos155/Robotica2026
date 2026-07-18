@@ -1,0 +1,1 @@
+# Navegación autónoma (ROS2 + LiDAR), agregación de datos | Serial con ambos firmwares - PROXIMAMENTE
