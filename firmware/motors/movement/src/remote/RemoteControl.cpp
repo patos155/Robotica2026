@@ -1,4 +1,4 @@
-#include "motors.h"
+#include "./remote/RemoteControl.h"
 #include "config.h"
 
 void Remote::begin() {
@@ -17,25 +17,25 @@ void Remote::update() {
         _readChannel(i);
     }
 
-    if (isAutonumousMode()) {
+    if (isAutonomousMode()) {
         _leftTargetSpeed = 0;
         _rightTargetSpeed = 0;
         return;
     }
 
     // Control de los motores izquierdos
-    if (chValue[1] > 0.35f && _chValue[1] < 0.65f) {
+    if (_chValue[1] > 0.35f && _chValue[1] < 0.65f) {
         _leftTargetSpeed = 0;
-    } else if (_chVlaue[1] >= 0.65f) {
-        _letfTargetSpeed = map(_chValue[1] * 100, 65, 100, 0, 255);
+    } else if (_chValue[1] >= 0.65f) {
+        _leftTargetSpeed = map(_chValue[1] * 100, 65, 100, 0, 255);
     } else if (_chValue[1] <=  0.35f) {
-        _letfTargetSpeed = -map(_chValue[1] * 100, 35, 100, 0, 255);
+        _leftTargetSpeed = -map(_chValue[1] * 100, 35, 100, 0, 255);
     }
 
     // Control de los motores derechos
-    if (chValue[2] > 0.35f && _chValue[2] < 0.65f) {
+    if (_chValue[2] > 0.35f && _chValue[2] < 0.65f) {
         _rightTargetSpeed = 0;
-    } else if (_chVlaue[2] >= 0.65f) {
+    } else if (_chValue[2] >= 0.65f) {
         _rightTargetSpeed = map(_chValue[2] * 100, 65, 100, 0, 255);
     } else if (_chValue[2] <=  0.35f) {
         _rightTargetSpeed = -map(_chValue[2] * 100, 35, 100, 0, 255);
