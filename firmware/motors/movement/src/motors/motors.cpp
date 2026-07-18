@@ -1,5 +1,5 @@
 #include "motors.h"
-#include <./config.h>
+#include "config.h"
 
 void  Motors::begin(){
     pinMode(PIN_PWM_LEFT, OUTPUT);
