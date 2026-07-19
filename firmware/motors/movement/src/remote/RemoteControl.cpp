@@ -7,38 +7,12 @@ void Remote::begin() {
         pinMode(_rcPins[i], INPUT);
         _chValue[i] = 0.5f;
     }
-    _leftTargetSpeed=0;
-    _rightTargetSpeed=0;
 }
 
 void Remote::update() {
     // Lee constantemente los canales del control remoto
     for (int i=0; i<6; i++) {
         _readChannel(i);
-    }
-
-    if (isAutonumousMode()) {
-        _leftTargetSpeed = 0;
-        _rightTargetSpeed = 0;
-        return;
-    }
-
-    // Control de los motores izquierdos
-    if (chValue[1] > 0.35f && _chValue[1] < 0.65f) {
-        _leftTargetSpeed = 0;
-    } else if (_chVlaue[1] >= 0.65f) {
-        _letfTargetSpeed = map(_chValue[1] * 100, 65, 100, 0, 255);
-    } else if (_chValue[1] <=  0.35f) {
-        _letfTargetSpeed = -map(_chValue[1] * 100, 35, 100, 0, 255);
-    }
-
-    // Control de los motores derechos
-    if (chValue[2] > 0.35f && _chValue[2] < 0.65f) {
-        _rightTargetSpeed = 0;
-    } else if (_chVlaue[2] >= 0.65f) {
-        _rightTargetSpeed = map(_chValue[2] * 100, 65, 100, 0, 255);
-    } else if (_chValue[2] <=  0.35f) {
-        _rightTargetSpeed = -map(_chValue[2] * 100, 35, 100, 0, 255);
     }
 }
 
@@ -71,6 +45,6 @@ bool Remote::isAutonomousMode() const {
     return _chValue[4] <= 0.5f; 
 }
 
-int Remote::getLeftTargetSpeed() const { return _leftTargetSpeed; }
-int Remote::getRightTargetSpeed() const { return _rightTargetSpeed; }
-float Remote::getChannelValue(int channel) const { return _chValue[channel]; }
+float Remote::getChannelValue(int channel) const { 
+    return _chValue[channel]; 
+}
