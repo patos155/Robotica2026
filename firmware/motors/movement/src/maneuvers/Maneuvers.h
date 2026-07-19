@@ -18,10 +18,10 @@ class Maneuvers {
         void uTurn();
         
         // tiempo de los delays para las secuencias
-        static constexpr int delayStop = 1000;
-        static constexpr int delayTurn = 1500;
-        static constexpr int delayForward = 1500;
-        static constexpr int delayUTurn = 4000;
+        static constexpr int DELAY_STOP = 1000;
+        static constexpr int DELAY_TURN = 1500;
+        static constexpr int DELAY_FORWARD = 1500;
+        static constexpr int DELAY_U_TURN = 4000;
 
     private:
         // Crea punteros para las clases

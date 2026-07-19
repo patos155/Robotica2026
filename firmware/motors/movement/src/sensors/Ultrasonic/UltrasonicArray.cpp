@@ -39,12 +39,12 @@ void UltrasonicArray::update() {
     _rrm = _readUltra(PIN_RIGHT_REAR_TRIGGER, PIN_RIGHT_REAR_ECHO);
 
     // Devuelve "true" si el camino esta libre, false si hay obstaculo
-    _lrl = (_lrm > lateralDistance) ? 1 : 0;
-    _lfl = (_lfm > lateralDistance) ? 1 : 0;
-    _fll = (_flm > frontDistance) ? 1 : 0;
-    _frl = (_frm > frontDistance) ? 1 : 0;
-    _rfl = (_rfm > lateralDistance) ? 1 : 0;
-    _rrl = (_rrm > lateralDistance) ? 1 : 0;
+    _lrl = (_lrm > LATERAL_DISTANCE) ? 1 : 0;
+    _lfl = (_lfm > LATERAL_DISTANCE) ? 1 : 0;
+    _fll = (_flm > FRONT_DISTANCE) ? 1 : 0;
+    _frl = (_frm > FRONT_DISTANCE) ? 1 : 0;
+    _rfl = (_rfm > LATERAL_DISTANCE) ? 1 : 0;
+    _rrl = (_rrm > LATERAL_DISTANCE) ? 1 : 0;
 
 }
 

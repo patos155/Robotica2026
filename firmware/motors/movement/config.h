@@ -46,14 +46,14 @@ constexpr int PIN_RIGHT_REAR_TRIGGER    = 23;
 constexpr int PIN_RIGHT_REAR_ECHO       = 24;
 
 // Variables de distancia minima a paredes con ultrasonicos
-constexpr int lateralDistance   = 25;         // Distancia lateral
-constexpr int frontDistance     = 25;         // Distancia delantera
+constexpr int LATERAL_DISTANCE      = 25;         // Distancia lateral
+constexpr int FRONT_DISTANCE        = 25;         // Distancia delantera
 
 // Potencias para motores 
-constexpr int speedLeftFront    = 150;
-constexpr int speedLeftTurn     = 200;
-constexpr int speedRightTurn = speedLeftTurn;
-constexpr int speedRightFront = speedLeftFront;
+constexpr int SPEED_LEFT_FRONT      = 150;
+constexpr int SPEED_LEFT_TURN       = 200;
+constexpr int SPEED_RIGHT_TURN      = SPEED_LEFT_TURN;
+constexpr int SPEED_RIGHT_FRONT     = SPEED_LEFT_FRONT;
 
 constexpr uint8_t  MOT_FORWARD      = HIGH;
 constexpr uint8_t  MOT_STOP         = LOW;

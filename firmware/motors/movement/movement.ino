@@ -44,7 +44,7 @@ void loop() {
             }
             
             if (mensaje == "F") {
-                motors.move(speedLeftFront, speedRightFront);
+                motors.move(SPEED_LEFT_FRONT, SPEED_RIGHT_FRONT);
             } else if (mensaje == "L") {
                 commu.sendLog("Giro Izquierda");
                 maneu.turnLeft();
