@@ -11,6 +11,9 @@ Remote rc;
 Maneuvers maneu;
 Communication commu;
 
+unsigned long lastCommandTime = 0;
+const unsigned long timeOut = 500;
+
 void setup() {
     commu.begin(9600);
     commu.sendLog("Iniciando hardware");
@@ -27,11 +30,18 @@ void loop() {
     int leftTargetSpeed = 0;
     int rightTargetSpeed = 0;
 
+    watchdogReset();
+
     if (rc.isAutonomousMode()) {
         ultraSensors.update();
         commu.sendSensorData(&ultraSensors);
         if (ultraSensors.isFLL() == 1 && ultraSensors.isFRL() == 1) {
             String mensaje = commu.receiveCommand();
+            
+            // Si el comando no está vacio, actualizamos el watchdog
+            if (mensaje.length() > 0) {
+                lastCommandTime = millis();
+            }
             
             if (mensaje == "F") {
                 motors.move(speedLeftFront, speedRightFront);
@@ -51,6 +61,7 @@ void loop() {
                 motors.stop();
             }
         } else {
+            lastCommandTime = millis();
             if (ultraSensors.isFLL() == 0 && ultraSensors.isFRL() == 0) {
                 if (ultraSensors.isLFL() == 1 && ultraSensors.isRFL() == 0){
                     commu.sendLog("Giro izquierdo (con ultrasonicos)");
@@ -84,5 +95,12 @@ void loop() {
             rightTargetSpeed = -map(ch2 * 100, 65, 100, 0, 255);
         }
         motors.move(leftTargetSpeed, rightTargetSpeed);
+    }
+}
+
+void watchdogReset() {
+    if millis() - lastCommandTime > timeOut {
+        motors.stop();
+        commu.sendLog("Watchdog: No se recibieron comandos, deteniendo motores");
     }
 }
