@@ -53,12 +53,11 @@ long UltrasonicArray::_readUltra(int trigPin, int echoPin) {
     digitalWrite(trigPin, HIGH);
     delayMicroseconds(10);
     digitalWrite(trigPin, LOW);
-    
+
     long duration = pulseIn(echoPin, HIGH, pulseInDelay);
-    
     // Retornamos una distancia alta (200 cm) para indicar que el camino esta despejado
-    if (duration == 0) {
-        return 200; 
+    if (duration == 0 || duration > 2500) {
+        return -1; 
     }
     
     // Convertir el tiempo en distancia (cm)
