@@ -6,13 +6,13 @@
 
 #pragma once
 #include <Arduino.h>
-#include "motors.h"
-#include "UltrasonicArray.h"
-#include "Serialcomm.h"
+#include "../motors/motors.h"
+#include "../sensors/Ultrasonic/UltrasonicArray.h"
+#include "../communication/SerialComm.h"
 
 class Maneuvers {
     public:
-        void begin(Motors * motorsInstance, UltrasonicArray * sensorsInstance);
+        void begin(Motors * motorsInstance, UltrasonicArray * sensorsInstance, Communication * comm);
         void turnLeft();
         void turnRight();
         void uTurn();

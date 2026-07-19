@@ -26,17 +26,17 @@ void UltrasonicArray::begin() {
 
 void UltrasonicArray::update() {
     // Realizar las mediciones fisicas en centimetros
-    _lrm = readUltra(PIN_LEFT_REAR_TRIGGER, PIN_LEFT_REAR_ECHO);
+    _lrm = _readUltra(PIN_LEFT_REAR_TRIGGER, PIN_LEFT_REAR_ECHO);
     delay(5);
-    _lfm = readUltra(PIN_LEFT_FRONT_TRIGGER, PIN_LEFT_FRONT_ECHO);
+    _lfm = _readUltra(PIN_LEFT_FRONT_TRIGGER, PIN_LEFT_FRONT_ECHO);
     delay(5);
-    _flm = readUltra(PIN_FRONT_LEFT_TRIGGER, PIN_FRONT_LEFT_ECHO);
+    _flm = _readUltra(PIN_FRONT_LEFT_TRIGGER, PIN_FRONT_LEFT_ECHO);
     delay(5);
-    _frm = readUltra(PIN_FRONT_RIGHT_TRIGGER, PIN_FRONT_RIGHT_ECHO);
+    _frm = _readUltra(PIN_FRONT_RIGHT_TRIGGER, PIN_FRONT_RIGHT_ECHO);
     delay(5);
-    _rfm = readUltra(PIN_RIGHT_FRONT_TRIGGER, PIN_RIGHT_FRONT_ECHO);
+    _rfm = _readUltra(PIN_RIGHT_FRONT_TRIGGER, PIN_RIGHT_FRONT_ECHO);
     delay(5);
-    _rrm = readUltra(PIN_RIGHT_REAR_TRIGGER, PIN_RIGHT_REAR_ECHO);
+    _rrm = _readUltra(PIN_RIGHT_REAR_TRIGGER, PIN_RIGHT_REAR_ECHO);
 
     // Devuelve "true" si el camino esta libre, false si hay obstaculo
     _lrl = (_lrm > lateralDistance) ? 1 : 0;

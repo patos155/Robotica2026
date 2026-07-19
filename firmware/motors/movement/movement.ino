@@ -1,9 +1,9 @@
 #include "config.h"
-#include "SerialComm.h"
-#include "Maneuvers.h"
-#include "UltrasonicArray.h"
-#include "motors.h"
-#include "RemoteControl.h"
+#include "./communication/SerialComm.h"
+#include "./maneuvers/Maneuvers.h"
+#include "./sensors/Ultrasonic/UltrasonicArray.h"
+#include "./motors/Motors.h"
+#include "./remote/RemoteControl.h"
 
 Motors motors;
 UltrasonicArray ultraSensors;
@@ -22,49 +22,45 @@ void setup() {
 }
 
 void loop() {
-<<<<<<< HEAD
-    control.update();
-=======
     rc.update();
 
     int leftTargetSpeed = 0;
     int rightTargetSpeed = 0;
->>>>>>> 8e0d6be (refactor (control): extraer logica de motores de RemoteControl al loop principal)
-    
-    if (control.isAutonoumusMode()) {
+
+    if (rc.isAutonomousMode()) {
         ultraSensors.update();
         commu.sendSensorData(&ultraSensors);
-        if (ultraSensors.isFLL == 1 && ultraSensors.isFRL == 1) {
+        if (ultraSensors.isFLL() == 1 && ultraSensors.isFRL() == 1) {
             String mensaje = commu.receiveCommand();
             
             if (mensaje == "F") {
-                motors.move(speedLeftFront, speedRightFront)
+                motors.move(speedLeftFront, speedRightFront);
             } else if (mensaje == "L") {
-                comunicacion.sendLog("Giro Izquierda");
-                maniobras.turnLeft();
-                comunicacion.sendStatusDone();
+                commu.sendLog("Giro Izquierda");
+                maneu.turnLeft();
+                commu.sendStatusDone();
             } else if (mensaje == "R") {
-                comunicacion.sendLog("Giro Derecha");
-                maniobras.turnRight();
-                comunicacion.sendStatusDone();
+                commu.sendLog("Giro Derecha");
+                maneu.turnRight();
+                commu.sendStatusDone();
             } else if (mensaje == "U") {
-                comunicacion.sendLog("Giro en U");
-                maniobras.uTurn();
-                comunicacion.sendStatusDone();
+                commu.sendLog("Giro en U");
+                maneu.uTurn();
+                commu.sendStatusDone();
             } else if (mensaje == "S") {
                 motors.stop();
             }
         } else {
-            if (ultraSensors.isFLL == 0 && ultraSensors.isFRL == 0) {
-                if (ultraSensors.isLFL == 1 && ultraSensors.isRFL == 0){
-                    comunicacion.sendLog("Giro izquierdo (con ultrasonicos)");
-                    maniobras.turnLeft();
-                } else if (ultraSensors.isLFL == 0 && ultraSensors.isRFL == 1) {
-                    comunicacion.sendLog("Giro derecho (con ultrasonicos)");
-                    maniobras.turnRight();
+            if (ultraSensors.isFLL() == 0 && ultraSensors.isFRL() == 0) {
+                if (ultraSensors.isLFL() == 1 && ultraSensors.isRFL() == 0){
+                    commu.sendLog("Giro izquierdo (con ultrasonicos)");
+                    maneu.turnLeft();
+                } else if (ultraSensors.isLFL() == 0 && ultraSensors.isRFL() == 1) {
+                    commu.sendLog("Giro derecho (con ultrasonicos)");
+                    maneu.turnRight();
                 } else {
                     motors.stop();
-                    comunicacion.sendLog("----------------- Alto Emergencia --------------");
+                    commu.sendLog("----------------- Alto Emergencia --------------");
                 }
             } 
         }

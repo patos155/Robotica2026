@@ -54,3 +54,6 @@ constexpr int speedLeftFront    = 150;
 constexpr int speedLeftTurn     = 200;
 constexpr int speedRightTurn = speedLeftTurn;
 constexpr int speedRightFront = speedLeftFront;
+
+constexpr uint8_t  MOT_FORWARD      = HIGH;
+constexpr uint8_t  MOT_STOP         = LOW;
