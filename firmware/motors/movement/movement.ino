@@ -99,7 +99,7 @@ void loop() {
 }
 
 void watchdogReset() {
-    if millis() - lastCommandTime > timeOut {
+    if (millis() - lastCommandTime > timeOut) {
         motors.stop();
         commu.sendLog("Watchdog: No se recibieron comandos, deteniendo motores");
     }
