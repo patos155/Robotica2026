@@ -4,12 +4,14 @@
 #include "./sensors/Ultrasonic/UltrasonicArray.h"
 #include "./motors/Motors.h"
 #include "./remote/RemoteControl.h"
+#include "./system/System.h"
 
 Motors motors;
 UltrasonicArray ultraSensors;
 Remote rc;
 Maneuvers maneu;
 Communication commu;
+System dbg;
 
 unsigned long lastCommandTime = 0;
 const unsigned long timeOut = 500;
@@ -21,6 +23,7 @@ void setup() {
     ultraSensors.begin();
     rc.begin();
     maneu.begin(&motors,& ultraSensors, &commu);
+    dbg.begin(&commu, false); // deshabilitamos la depuracion del sistema por defecto
     commu.sendLog("Hardware listo");
 }
 
@@ -34,6 +37,7 @@ void loop() {
 
     if (rc.isAutonomousMode()) {
         ultraSensors.update();
+        dbg.printChannels(rc);
         commu.sendSensorData(&ultraSensors);
         if (ultraSensors.isFLL() == 1 && ultraSensors.isFRL() == 1) {
             String mensaje = commu.receiveCommand();
