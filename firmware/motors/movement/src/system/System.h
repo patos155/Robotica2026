@@ -1,5 +1,5 @@
 // =============================================================
-// Nombre de la clase:          System
+// Nombre de la clase:          Logger
 // Descripcion:                 Depuracion general del sistema, incluyendo sensores y control remoto
 // Restricciones importantes:   Unico modulo que puede depurar el sistema
 // =============================================================
@@ -10,19 +10,24 @@
 #include "./remote/RemoteControl.h"
 #include "./sensors/Ultrasonic/UltrasonicArray.h"
 
-class System {
+class Logger {
 private:
     Communication* _comm;
     bool _enabled;
 
 public:
-    System();
-    void begin(Communication* comm, bool enabled = false); 
-    void setEnabled(bool enabled);
-    bool isEnabled();
-    void info(String message);
-    void warning(String message);
-    void error(String message);
+    Logger();
+    void begin(Communication* comm, bool enable = false);
+
+    void info(const __FlashStringHelper* msg);
+    void warning(const __FlashStringHelper* msg);
+    void error(const __FlashStringHelper* msg);
+    
+    void debug(const __FlashStringHelper* msg);
+    void debug(const __FlashStringHelper* msg, int value);
+    void debug(const __FlashStringHelper* msg, float value);
+
+    // Funciones específicas para lectura masiva
     void printChannels(Remote& rc);
     void printSensors(UltrasonicArray& sensors);
 };

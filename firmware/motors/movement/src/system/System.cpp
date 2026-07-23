@@ -1,50 +1,65 @@
 #include "System.h"
+#include "config.h"
 
-System::System() {
-    _enabled = false;
-}
+Logger::Logger() {}
 
-void System::begin(Communication* comm, bool enabled) {
+void Logger::begin(Communication* comm, bool enabled) {
     _comm = comm;
     _enabled = enabled;
 }
 
-void System::setEnabled(bool enabled) {
-    _enabled = enabled;
-}
-
-bool System::isEnabled() {
-    return _enabled;
-}
-
-void System::info(String message) {
+void Logger::info(const __FlashStringHelper* msg) {
+#ifdef DEBUG_MODE
     if (!_enabled) return;
-    _comm->sendLog("[INFO]: " + message);
+    _comm->sendLog(String("[INFO]: ") + String(msg));
+#endif
 }
 
-void System::warning(String message) {
-    if (!_enabled) return;
-    _comm->sendLog("[ADVERTENCIA] ! : " + message);
+void Logger::warning(const __FlashStringHelper* msg) {
+    _comm->sendLog(String("[ADVERTENCIA] ! : ") + String(msg));
 }
 
-void System::error(String message) {
-    if (!_enabled) return;
-    _comm->sendLog("[ERROR] X : " + message);
+void Logger::error(const __FlashStringHelper* msg) {
+    _comm->sendLog(String("[ERROR] X : ") + String(msg));
 }
 
-void System::printChannels(Remote& rc) {
+void Logger::debug(const __FlashStringHelper* msg) {
+#ifdef DEBUG_MODE
     if (!_enabled) return;
-    
-    _comm->sendLog("--- Canales CR ---");
+    _comm->sendLog(String("[DEBUG]: ") + String(msg));
+#endif
+}
+
+void Logger::debug(const __FlashStringHelper* msg, int value) {
+#ifdef DEBUG_MODE
+    if (!_enabled) return;
+    _comm->sendLog(String("[DEBUG]: ") + String(msg) + String(value));
+#endif
+}
+
+void Logger::debug(const __FlashStringHelper* msg, float value) {
+#ifdef DEBUG_MODE
+    if (!_enabled) return;
+    _comm->sendLog(String("[DEBUG]: ") + String(msg) + String(value));
+#endif
+}
+
+void Logger::printChannels(Remote& rc) {
+#ifdef DEBUG_MODE
+    if (!_enabled) return;
+    _comm->sendLog(F("--- Canales CR ---"));
     for (int iChannel = 1; iChannel <= 6; iChannel++) {
         float value = rc.getChannelValue(iChannel);
         String message = "Ch #" + String(iChannel) + ": " + String(value);
         _comm->sendLog(message);
     }
-    _comm->sendLog("------------------");
+    _comm->sendLog(F("------------------"));
+#endif
 }
-void System::printSensors(UltrasonicArray& sensors) {
+void Logger::printSensors(UltrasonicArray& sensors) {
+#ifdef DEBUG_MODE
     if (!_enabled) return;
     String data = "Ultrasonic -> fr-Izq: " + String(sensors.getFLM()) + " | fr-Der: " + String(sensors.getFRM()) + " | izq-Fr: " + String(sensors.getLFM()) + "| izq-Tra" + String(sensors.getLRM()) + " | der-Fr: " + String(sensors.getRFM()) + "| der-Tra" + String(sensors.getRRM());
     _comm->sendLog(data);
+#endif
 }

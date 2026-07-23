@@ -35,6 +35,7 @@ void loop() {
 
     watchdogReset();
 
+    // ----------------------------- MODO AUTONOMO -----------------------------------
     if (rc.isAutonomousMode()) {
         ultraSensors.update();
         dbg.printChannels(rc);
@@ -80,6 +81,8 @@ void loop() {
             } 
         }
     } else {
+        // ----------------------------- MODO MANUAL -----------------------------------
+        dbg.printChannels(rc);
         float ch1 = rc.getChannelValue(1);
         float ch2 = rc.getChannelValue(2);
 
