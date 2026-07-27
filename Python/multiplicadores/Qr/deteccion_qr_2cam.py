@@ -18,7 +18,7 @@ def Qr():
         print(f"Camara Der Abierta: {rightCap.isOpened()}")
         return
 
-    print("Camaras duales iniciadas. Presiona 'q' para salir")
+    print("Camaras duales iniciadas presiona 'q' para salir")
 
     while True:
         # LECTURA DE DATOS
@@ -63,9 +63,8 @@ def Qr():
         panorama = cv2.hconcat([frame_izq, frame_der])
 
         # Mostrar la ventana unica panoramica
-        cv2.imshow("Vision Panoramica del Robot", panorama)
+        cv2.imshow("Vision del Robot", panorama)
 
-        # Romper el bucle si se presiona la tecla 'q'
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
