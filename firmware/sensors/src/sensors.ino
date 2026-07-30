@@ -5,8 +5,13 @@
 // update() de cada módulo.
 // =============================================================
 
+#include "communication/SerialComm.h"
+SerialComm comm;
 void setup() {
+    comm.begin();
+    comm.logInfo(F("Sistema iniciado"));
 }
 
 void loop() {
+    comm.update();
 }
