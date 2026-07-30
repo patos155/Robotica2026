@@ -5,13 +5,24 @@
 // update() de cada módulo.
 // =============================================================
 
+#include "config.h"
+#include "sensors/magnet/MagnetSensor.h"
 #include "communication/SerialComm.h"
+
 SerialComm comm;
+MagnetSensor magnetSensor;
+
 void setup() {
     comm.begin();
+    magnetSensor.begin();
     comm.logInfo(F("Sistema iniciado"));
 }
 
 void loop() {
     comm.update();
+
+    if (comm.consumeMagnetReadRequest()) {
+        MagnetSensor::Reading reading = magnetSensor.read();
+        comm.sendMagnetReading(reading);
+    }
 }
