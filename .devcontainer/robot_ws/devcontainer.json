@@ -1,0 +1,17 @@
+{
+  "name": "robot_rescate — robot_ws (ROS2 Jazzy)",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-iot.vscode-ros"
+      ]
+    }
+  },
+  "postCreateCommand": "cd /workspace/robot_ws && rosdep install --from-paths src --ignore-src -r -y && colcon build --symlink-install"
+}

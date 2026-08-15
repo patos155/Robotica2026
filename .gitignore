@@ -9,3 +9,8 @@
 .DS_Store
 Thumbs.db
 *.swp
+
+# ===== Artefactos Colcon build =====
+build/
+install/
+log/
