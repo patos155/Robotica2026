@@ -25,7 +25,8 @@ setup(
     entry_points={
         'console_scripts': [
             'camera_publisher = robot_vision.camera_publisher:main',
-            'qr_detector = robot_vision.detectors.qr_detector:main'
+            'qr_detector = robot_vision.detectors.qr_detector:main',
+            'motion_detector = robot_vision.detectors.motion_detector:main'
         ],
     },
 )
