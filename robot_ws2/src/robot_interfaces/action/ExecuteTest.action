@@ -1,0 +1,10 @@
+# Goal — qué prueba ejecutar y con qué parámetros
+string test_name
+string params_json
+---
+# Result — resultado final una vez que la prueba termina, se cancela o expira
+bool success
+string result_json
+---
+# Feedback — progreso parcial mientras la prueba sigue corriendo
+string feedback_json
