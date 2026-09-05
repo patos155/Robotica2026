@@ -11,6 +11,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-dev-tools \
     ros-jazzy-cv-bridge \
     ros-jazzy-image-transport \
+    ros-jazzy-rosbridge-suite \
+    ros-jazzy-web-video-server \
     libzbar0 \
     git \
     ros-jazzy-foxglove-bridge \
@@ -25,6 +27,6 @@ RUN pip3 install --no-cache-dir --break-system-packages pyzbar "qrcode[pil]"
 RUN rosdep init || true && rosdep update
 
 RUN echo "source /opt/ros/jazzy/setup.bash" >> /etc/bash.bashrc && \
-    echo "if [ -f /workspace/robot_ws/install/setup.bash ]; then source /workspace/robot_ws/install/setup.bash; fi" >> /etc/bash.bashrc
+    echo "if [ -f /workspace/robot_ws2/install/setup.bash ]; then source /workspace/robot_ws2/install/setup.bash; fi" >> /etc/bash.bashrc
 
 WORKDIR /workspace
