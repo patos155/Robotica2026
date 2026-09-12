@@ -1,10 +1,11 @@
 import cv2
 import rclpy
 from rclpy.node import Node
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import CompressedImage
 from cv_bridge import CvBridge
 from pyzbar.pyzbar import decode
 import numpy as np
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 
 class QrTest(Node):
 
@@ -12,12 +13,18 @@ class QrTest(Node):
         super().__init__('qr_test')
         self.bridge = CvBridge()
 
-        self.create_subscription(Image, '/camera/image_raw', self.on_frame, 10)
-        self.processed_pub = self.create_publisher(Image, '/qr_test/image_processed', 10)
-        self.get_logger().info('qr_test iniciado s')
+        qos = QoSProfile(
+            reliability=ReliabilityPolicy.BEST_EFFORT,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=1
+        )
+
+        self.create_subscription(CompressedImage, '/camera/image_raw', self.on_frame, 10)
+        self.processed_pub = self.create_publisher(CompressedImage, '/qr_test/image_processed', 10)
+        self.get_logger().info('qr_test iniciado')
 
     def on_frame(self, msg):
-        frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+        frame = self.bridge.compressed_imgmsg_to_cv2(msg, desired_encoding='bgr8')
         detected_codes = decode(frame)
         # self.get_logger().info(f'QR Code pending:')
         for code in detected_codes:
@@ -33,7 +40,7 @@ class QrTest(Node):
                 cv2.putText(frame, qr_data, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
                 # cv2.putText(frame, qr_data, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,0,0), 2)
 
-            processed_msg = self.bridge.cv2_to_imgmsg(frame, encoding='bgr8')
+            processed_msg = self.bridge.cv2_to_compressed_imgmsg(frame, dst_format='jpg')
             self.processed_pub.publish(processed_msg)
 
 
