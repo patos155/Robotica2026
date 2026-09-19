@@ -1,10 +1,11 @@
 {
-  "name": "robot_rescate — robot_ws (ROS2 Jazzy)",
+  "name": "robot_rescate — robot_ws (ROS2 Humble)",
   "build": {
     "dockerfile": "Dockerfile"
   },
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
   "workspaceFolder": "/workspace",
+  "forwardPorts": [8080, 9090],
   "customizations": {
     "vscode": {
       "extensions": [

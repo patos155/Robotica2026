@@ -67,7 +67,7 @@ Cada carpeta de primer nivel tiene su propio `README.md` y `CONVENTIONS.md`.
 **Pendiente de construir:**
 - [ ] `firmware/motors` — en refactor sobre la estructura ya definida
 - [ ] `firmware/sensors` — sin implementar
-- [ ] `robot_ws` — existe un nodo de navegación preliminar (ROS2) sin dividir en los paquetes definidos, sin probar en competencia
+- [ ] `robot_ws` — solo tiene el paquete `robot_vision` (cámara + QR); navegación/LiDAR/SLAM aún no implementados como paquetes ROS2 — hay una exploración previa sin integrar en `robot_ws_legacy`
 - [ ] `dashboard` — no iniciado
 - [ ] Integración de punta a punta probada sobre el robot físico
 

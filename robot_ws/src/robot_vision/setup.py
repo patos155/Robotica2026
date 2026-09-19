@@ -1,3 +1,5 @@
+from glob import glob
+
 from setuptools import find_packages, setup
 
 package_name = 'robot_vision'
@@ -10,6 +12,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        ('share/' + package_name + '/launch', glob('launch/*.launch.py')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -24,8 +27,9 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'camera_publisher = robot_vision.camera_publisher:main',
-            'qr_detector = robot_vision.detectors.qr_detector:main',
+            'camera_raw_publisher = robot_vision.camera_raw_publisher:main',
+            'image_compressor = robot_vision.image_compressor:main',
+            'test_runner = robot_vision.test_runner:main',
             'motion_detector = robot_vision.detectors.motion_detector:main'
         ],
     },
