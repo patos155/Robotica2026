@@ -97,12 +97,15 @@ nueva por cada prueba. Pasos:
    / `result.result_images`, y llame `goal_handle.succeed()` o
    `goal_handle.abort()`.
    - Prueba **instantánea** (un solo frame, como QR/hazmat): usa
-     `node.latest_frame`, procesa una vez, regresa. No manda feedback.
+     `node.latest_frame`, procesa una vez, regresa. No manda feedback. Ver
+     `_handle_qr` en `test_runner.py` como referencia.
    - Prueba de **duración variable** (como movimiento/voz): hace su propio
      loop dentro del handler, publica `goal_handle.publish_feedback(...)`
      periódicamente, revisa `goal_handle.is_cancel_requested` en cada
      vuelta, y aplica un timeout (30s si el cliente no manda uno distinto
-     en `timeout_s`).
+     en `timeout_s`). Ver `_handle_motion` en `test_runner.py` como
+     referencia — incluye el patrón de correr algo con estado propio
+     (`cv2.BackgroundSubtractorMOG2`) que se crea nuevo en cada prueba.
 3. Registrar el handler en el dict `TEST_HANDLERS` de `test_runner.py`:
    ```python
    TEST_HANDLERS = {

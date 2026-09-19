@@ -127,7 +127,8 @@ de error, no una excepción.
 - [x] `robot_vision` — cámara cruda + compresión separadas, prueba de QR (`pyzbar`) bajo demanda vía Action `/run_test`
 - [x] Launch file que levanta los nodos de `robot_vision` juntos
 - [x] `rosbridge_suite` / `web_video_server` hacia `dashboard`
-- [ ] Handlers de `test_runner` para hazmat, movimiento y voz (la interfaz `RunTest` ya los soporta)
+- [x] Handler de `test_runner` para movimiento (`MOG2`) — primera prueba de duración variable (feedback + cancelación + timeout)
+- [ ] Handlers de `test_runner` para hazmat y voz (la interfaz `RunTest` ya los soporta)
 - [ ] `robot_bringup` / `robot_core` — navegación, LiDAR + SLAM, agregación
       de datos. Existe una exploración previa sin integrar en
       [`robot_ws_legacy/`](../robot_ws_legacy)

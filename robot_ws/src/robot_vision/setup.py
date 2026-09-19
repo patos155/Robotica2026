@@ -30,7 +30,6 @@ setup(
             'camera_raw_publisher = robot_vision.camera_raw_publisher:main',
             'image_compressor = robot_vision.image_compressor:main',
             'test_runner = robot_vision.test_runner:main',
-            'motion_detector = robot_vision.detectors.motion_detector:main'
         ],
     },
 )
