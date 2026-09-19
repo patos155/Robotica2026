@@ -6,10 +6,14 @@ ROS 2 `/run_test` con pruebas bajo demanda (por ahora, `qr`).
 ## Enlaces utilizados
 
 - WebSocket rosbridge: `ws://IP_DEL_ROBOT:9090`
-- Video MJPEG: `http://IP_DEL_ROBOT:8080/stream?topic=/camera/image_raw&default_transport=compressed`
-  (`topic` es el topic base de `image_transport`; `default_transport=compressed`
-  hace que `web_video_server` vaya a buscar la variante ya comprimida en
-  `/camera/image_raw/compressed`, publicada por `image_compressor`)
+- Video MJPEG: `http://IP_DEL_ROBOT:8080/stream?topic=/camera/image_raw&type=ros_compressed&qos_profile=sensor_data`
+  (`topic` es el topic base; `type=ros_compressed` hace que `web_video_server`
+  se suscriba a `/camera/image_raw/compressed`, publicado por
+  `image_compressor`, y reenvíe esos JPEG tal cual, sin recomprimir ni
+  necesitar el plugin `compressed_image_transport`. `qos_profile=sensor_data`
+  es obligatorio: el default de `web_video_server` es `RELIABLE` y el topic
+  se publica `BEST_EFFORT`, así que sin esto nunca llegan frames. La
+  calidad/resolución las define `image_compressor` y la cámara, no la URL)
 - Acción: `/run_test` (`robot_interfaces/action/RunTest`)
 
 ## Ejecutar ROS 2
