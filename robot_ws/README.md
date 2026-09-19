@@ -33,7 +33,7 @@ robot_ws/
 │       │   └── robot_vision.launch.py ← levanta los 3 nodos + rosbridge_server + web_video_server juntos
 │       ├── robot_vision/
 │       │   ├── camera_raw_publisher.py ← nodo: abre la cámara USB, publica /camera/image_raw sin comprimir
-│       │   ├── image_compressor.py     ← nodo: suscribe a /camera/image_raw, publica /camera/image_raw/compressed (JPEG)
+│       │   ├── image_compressor.py     ← nodo: suscribe a /camera/image_raw, publica /camera/image_raw/compressed (JPEG; fps, escala y calidad por parámetros)
 │       │   ├── qos.py                  ← QoS compartido por los topics de frames de camara
 │       │   ├── test_runner.py          ← nodo: Action server /run_test, despacha por test_id
 │       │   └── detectors/
@@ -124,6 +124,35 @@ corre — las instantáneas (QR, hazmat) no mandan ninguno; las de duración
 Los `test_id` disponibles son las llaves de `TEST_HANDLERS` en
 `test_runner.py` — pedir uno que no existe regresa `ABORTED` con un mensaje
 de error, no una excepción.
+
+### Ajustar el bitrate del video en vivo
+
+`image_compressor` limita cuántos bytes por segundo salen hacia el
+`dashboard` con tres parámetros ROS que se cambian sin reiniciar el nodo. El
+tope de referencia es el del reglamento (5 Mbps, ver
+[`docs/rules/07-degradacion-comunicaciones.md`](../docs/rules/07-degradacion-comunicaciones.md)).
+
+| Parámetro | Default | Rango | Efecto |
+|---|---|---|---|
+| `max_fps` | `12.0` | 1.0–30.0 | Frames por segundo que se publican en `/camera/image_raw/compressed` (el crudo sigue a los fps de la cámara) |
+| `scale` | `1.0` | 0.1–1.0 | Factor de reducción de la resolución |
+| `jpeg_quality` | `60` | 1–100 | Calidad JPEG |
+
+```bash
+# perfil "ahorro" (~0.5 Mbps), para un enlace degradado
+ros2 param set /image_compressor max_fps 5.0
+ros2 param set /image_compressor scale 0.67
+ros2 param set /image_compressor jpeg_quality 40
+
+# perfil "normal" (~2.2 Mbps con la capturadora de 480x320)
+ros2 param set /image_compressor max_fps 12.0
+ros2 param set /image_compressor scale 1.0
+ros2 param set /image_compressor jpeg_quality 60
+```
+
+`max_fps` y `scale` son `double`: usa `5.0`, no `5` (con un entero ROS2
+rechaza el cambio). Un valor fuera de rango se acota al límite. Para verificar
+el efecto: `ros2 topic hz` y `ros2 topic bw /camera/image_raw/compressed`.
 
 ## Estado
 
