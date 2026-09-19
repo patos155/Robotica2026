@@ -1,38 +1,36 @@
 # Dashboard
 
-Interfaz Vue 3 para visualizar `/inspection/image_processed` y ejecutar la
-acción ROS 2 `/execute_test` con la prueba `qr`.
+Interfaz Vue 3 para visualizar `/camera/image_raw` y ejecutar la acción
+ROS 2 `/run_test` con pruebas bajo demanda (por ahora, `qr`).
 
 ## Enlaces utilizados
 
 - WebSocket rosbridge: `ws://IP_DEL_ROBOT:9090`
-- Video MJPEG: `http://IP_DEL_ROBOT:8080/stream?topic=/inspection/image_processed`
-- Acción: `/execute_test` (`robot_interfaces/action/ExecuteTest`)
+- Video MJPEG: `http://IP_DEL_ROBOT:8080/stream?topic=/camera/image_raw&default_transport=compressed`
+  (`topic` es el topic base de `image_transport`; `default_transport=compressed`
+  hace que `web_video_server` vaya a buscar la variante ya comprimida en
+  `/camera/image_raw/compressed`, publicada por `image_compressor`)
+- Acción: `/run_test` (`robot_interfaces/action/RunTest`)
 
 ## Ejecutar ROS 2
 
-En la laptop del robot, abre terminales separadas después de compilar y cargar
-el workspace:
+En la laptop del robot, después de compilar y cargar el workspace:
 
 ```bash
-cd robot_ws2
-source /opt/ros/jazzy/setup.bash
+cd robot_ws
+source /opt/ros/humble/setup.bash
 colcon build --symlink-install
 source install/setup.bash
+
+ros2 launch robot_vision robot_vision.launch.py
 ```
 
-```bash
-ros2 run robot_vision camera_stream
-ros2 run robot_vision inspection_pipeline
-ros2 launch rosbridge_server rosbridge_websocket_launch.xml port:=9090
-ros2 run web_video_server web_video_server --ros-args -p port:=8080
-```
-
-Los cuatro procesos deben permanecer activos. Si no están instalados los
-servidores web:
+Esto levanta los tres nodos de `robot_vision`, `rosbridge_server` (puerto
+9090) y `web_video_server` (puerto 8080) juntos. Si `rosbridge_server`/
+`web_video_server` no están instalados en el devcontainer:
 
 ```bash
-sudo apt install ros-jazzy-rosbridge-suite ros-jazzy-web-video-server
+sudo apt install ros-humble-rosbridge-suite ros-humble-web-video-server
 ```
 
 ## Ejecutar la interfaz

@@ -8,7 +8,7 @@ const defaultHost = envHost || window.location.hostname || 'localhost'
 const host = ref(localStorage.getItem('robot-host') || defaultHost)
 const rosbridgePort = ref(import.meta.env.VITE_ROSBRIDGE_PORT || '9090')
 const videoPort = ref(import.meta.env.VITE_VIDEO_PORT || '8080')
-const videoTopic = ref(import.meta.env.VITE_VIDEO_TOPIC || '/inspection/image_processed')
+const videoTopic = ref(import.meta.env.VITE_VIDEO_TOPIC || '/camera/image_raw')
 const videoReady = ref(false)
 const videoFailed = ref(false)
 const videoRevision = ref(0)
@@ -31,10 +31,11 @@ const socketUrl = computed(() => `ws://${host.value.trim()}:${rosbridgePort.valu
 const videoUrl = computed(() => {
   const query = new URLSearchParams({
     topic: videoTopic.value,
+    default_transport: 'compressed',
     type: 'mjpeg',
     width: '1280',
     quality: '78',
-    client_id: `dashboard-cam-${videoRevision.value}`,
+    client_id: `dashboard-${videoRevision.value}`,
   })
   return `http://${host.value.trim()}:${videoPort.value}/stream?${query}`
 })

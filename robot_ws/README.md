@@ -27,6 +27,8 @@ robot_ws/
 │       ├── package.xml
 │       ├── setup.py / setup.cfg
 │       ├── resource/
+│       ├── launch/
+│       │   └── robot_vision.launch.py ← levanta los 3 nodos + rosbridge_server + web_video_server juntos
 │       ├── robot_vision/
 │       │   ├── camera_raw_publisher.py ← nodo: abre la cámara USB, publica /camera/image_raw sin comprimir
 │       │   ├── image_compressor.py     ← nodo: suscribe a /camera/image_raw, publica /camera/image_raw/compressed (JPEG)
@@ -58,26 +60,37 @@ escribe cada topic — consistente con la regla de "un solo escritor" de
 
 ### Con devcontainer (recomendado)
 
-`.devcontainer/robot_ws` trae ROS2 **Jazzy**, `cv_bridge`, `libzbar0` (para
-`pyzbar`) y compila el workspace automáticamente al crear el contenedor
-(`postCreateCommand`). En VS Code: *Reopen in Container*, y luego dentro del
-contenedor:
+`.devcontainer/robot_ws` trae ROS2 **Humble** (misma versión que la laptop
+real del robot), `cv_bridge`, `libzbar0` (para `pyzbar`), `rosbridge_suite`
+y `web_video_server`, y compila el workspace automáticamente al crear el
+contenedor (`postCreateCommand`). En VS Code: *Reopen in Container*, y
+luego dentro del contenedor:
 
 ```bash
 cd /workspace/robot_ws
 source install/setup.bash
-ros2 run robot_vision camera_raw_publisher   # terminal 1
-ros2 run robot_vision image_compressor       # terminal 2
-ros2 run robot_vision test_runner            # terminal 3
+ros2 launch robot_vision robot_vision.launch.py
 ```
 
-Con los tres corriendo, pide una prueba desde una cuarta terminal — ver
+Esto levanta los 3 nodos de `robot_vision` más `rosbridge_server` (9090) y
+`web_video_server` (8080) para el puente hacia `dashboard`. Con eso
+corriendo, pide una prueba desde otra terminal — ver
 [Ejecutar una prueba de detección](#ejecutar-una-prueba-de-detección).
+
+Para debug puntual, cada nodo también se puede correr suelto en su propia
+terminal:
+
+```bash
+ros2 run robot_vision camera_raw_publisher
+ros2 run robot_vision image_compressor
+ros2 run robot_vision test_runner
+```
 
 ### Manual (sin devcontainer)
 
 ```bash
-sudo apt install ros-jazzy-cv-bridge ros-jazzy-image-transport libzbar0
+sudo apt install ros-humble-cv-bridge ros-humble-image-transport libzbar0 \
+  ros-humble-rosbridge-suite ros-humble-web-video-server ros-humble-launch-xml
 pip install pyzbar "qrcode[pil]"
 
 cd robot_ws
@@ -85,13 +98,8 @@ rosdep install --from-paths src --ignore-src -r -y
 colcon build --symlink-install
 source install/setup.bash
 
-ros2 run robot_vision camera_raw_publisher
-ros2 run robot_vision image_compressor
-ros2 run robot_vision test_runner
+ros2 launch robot_vision robot_vision.launch.py
 ```
-
-No hay `launch file` todavía — cada nodo se corre por separado en su propia
-terminal (ver [Estado](#estado)).
 
 ### Ejecutar una prueba de detección
 
@@ -117,13 +125,13 @@ de error, no una excepción.
 ## Estado
 
 - [x] `robot_vision` — cámara cruda + compresión separadas, prueba de QR (`pyzbar`) bajo demanda vía Action `/run_test`
+- [x] Launch file que levanta los nodos de `robot_vision` juntos
+- [x] `rosbridge_suite` / `web_video_server` hacia `dashboard`
 - [ ] Handlers de `test_runner` para hazmat, movimiento y voz (la interfaz `RunTest` ya los soporta)
-- [ ] Launch file que levante los nodos de `robot_vision` juntos
 - [ ] `robot_bringup` / `robot_core` — navegación, LiDAR + SLAM, agregación
       de datos. Existe una exploración previa sin integrar en
       [`robot_ws_legacy/`](../robot_ws_legacy)
 - [ ] Puente Serial con `firmware/motors` y `firmware/sensors`
-- [ ] `rosbridge_suite` / `web_video_server` hacia `dashboard`
 
 ## Ver también
 

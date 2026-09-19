@@ -1,7 +1,7 @@
 import { computed, onBeforeUnmount, ref } from 'vue'
 
-const ACTION_NAME = '/execute_test'
-const ACTION_TYPE = 'robot_interfaces/action/ExecuteTest'
+const ACTION_NAME = '/run_test'
+const ACTION_TYPE = 'robot_interfaces/action/RunTest'
 const MAX_RECONNECT_DELAY_MS = 8000
 
 export function useRosbridge() {
@@ -47,15 +47,6 @@ export function useRosbridge() {
     reconnectDelayMs = Math.min(reconnectDelayMs * 2, MAX_RECONNECT_DELAY_MS)
   }
 
-  function parseJsonField(value, fallback = {}) {
-    if (typeof value !== 'string') return value ?? fallback
-    try {
-      return JSON.parse(value)
-    } catch {
-      return fallback
-    }
-  }
-
   function handleMessage(event) {
     let message
     try {
@@ -66,22 +57,20 @@ export function useRosbridge() {
     }
 
     if (message.op === 'action_feedback' && message.id === activeGoalId) {
-      const data = parseJsonField(message.values?.feedback_json)
-      feedback.value = data.status || 'Procesando imagen…'
+      feedback.value = message.values?.status || 'Procesando imagen…'
       return
     }
 
     if (message.op === 'action_result' && message.id === activeGoalId) {
       isTestRunning.value = false
       const result = message.values || {}
-      const data = parseJsonField(result.result_json)
 
       if (message.result && result.success) {
-        qrResult.value = data.qr_text || 'QR detectado sin texto'
+        qrResult.value = result.result_text || 'QR detectado sin texto'
         feedback.value = 'Lectura terminada'
         addEvent(`QR detectado: ${qrResult.value}`, 'success')
       } else {
-        const reason = data.reason || data.error || 'La prueba no terminó correctamente'
+        const reason = result.message || 'La prueba no terminó correctamente'
         feedback.value = reason
         addEvent(`Prueba QR: ${reason}`, 'warning')
       }
@@ -166,7 +155,7 @@ export function useRosbridge() {
       id: goalId,
       action: ACTION_NAME,
       action_type: ACTION_TYPE,
-      args: { test_name: 'qr' },
+      args: { test_id: 'qr', timeout_s: 0 },
       feedback: true,
     })
     if (!sent) return
