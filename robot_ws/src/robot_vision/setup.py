@@ -24,8 +24,9 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'camera_publisher = robot_vision.camera_publisher:main',
-            'qr_detector = robot_vision.detectors.qr_detector:main'
+            'camera_raw_publisher = robot_vision.camera_raw_publisher:main',
+            'image_compressor = robot_vision.image_compressor:main',
+            'test_runner = robot_vision.test_runner:main',
         ],
     },
 )

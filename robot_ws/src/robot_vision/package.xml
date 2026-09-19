@@ -4,12 +4,13 @@
   <name>robot_vision</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="charley201050@hotmail.com">root</maintainer>
+  <maintainer email="charley201050@hotmail.com">Carlos Martinez</maintainer>
   <license>TODO: License declaration</license>
 
   <depend>rclpy</depend>
   <depend>sensor_msgs</depend>
   <depend>cv_bridge</depend>
+  <depend>robot_interfaces</depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

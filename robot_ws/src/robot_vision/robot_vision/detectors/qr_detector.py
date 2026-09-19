@@ -1,59 +1,29 @@
 import cv2
-import rclpy
-from rclpy.node import Node
-from sensor_msgs.msg import CompressedImage
-from cv_bridge import CvBridge
-from pyzbar.pyzbar import decode
 import numpy as np
-from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
-
-class QrTest(Node):
-
-    def __init__(self):
-        super().__init__('qr_test')
-        self.bridge = CvBridge()
-
-        qos = QoSProfile(
-            reliability=ReliabilityPolicy.BEST_EFFORT,
-            history=HistoryPolicy.KEEP_LAST,
-            depth=1
-        )
-
-        self.create_subscription(CompressedImage, '/camera/image_raw', self.on_frame, 10)
-        self.processed_pub = self.create_publisher(CompressedImage, '/qr_test/image_processed', 10)
-        self.get_logger().info('qr_test iniciado')
-
-    def on_frame(self, msg):
-        frame = self.bridge.compressed_imgmsg_to_cv2(msg, desired_encoding='bgr8')
-        detected_codes = decode(frame)
-        # self.get_logger().info(f'QR Code pending:')
-        for code in detected_codes:
-            qr_data = code.data.decode('utf-8')
-            self.get_logger().info(f'QR Code detected: {qr_data}')
-
-            if len(code.polygon) == 4:
-                polygon_points = [(p.x, p.y) for p in code.polygon]
-                pts = np.array(polygon_points, np.int32).reshape((-1,1,2))
-                cv2.polylines(frame, [pts], True, (0,255,0), 3)
-
-                text_position = polygon_points[0]
-                cv2.putText(frame, qr_data, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
-                # cv2.putText(frame, qr_data, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,0,0), 2)
-
-            processed_msg = self.bridge.cv2_to_compressed_imgmsg(frame, dst_format='jpg')
-            self.processed_pub.publish(processed_msg)
+from pyzbar.pyzbar import decode
 
 
-def main(args=None):
-    rclpy.init(args=args)
-    node = QrTest()
-    try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        node.destroy_node()
-        rclpy.shutdown()
+def detect_qr(frame):
+    """Busca codigos QR en `frame` (BGR, numpy array).
 
-if __name__ == '__main__':
-    main()
+    Regresa (annotated_frame, qr_text). qr_text es '' si no se detecto nada.
+    Si hay varios QR en el frame se anotan todos pero solo se regresa el
+    texto del primero.
+    """
+    annotated = frame.copy()
+    qr_text = ''
+
+    for code in decode(frame):
+        qr_data = code.data.decode('utf-8')
+        if not qr_text:
+            qr_text = qr_data
+
+        if len(code.polygon) == 4:
+            polygon_points = [(p.x, p.y) for p in code.polygon]
+            pts = np.array(polygon_points, np.int32).reshape((-1, 1, 2))
+            cv2.polylines(annotated, [pts], True, (0, 255, 0), 3)
+
+            text_position = polygon_points[0]
+            cv2.putText(annotated, qr_data, text_position, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+
+    return annotated, qr_text

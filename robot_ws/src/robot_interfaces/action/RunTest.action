@@ -1,0 +1,10 @@
+string test_id
+int32 timeout_s
+---
+bool success
+string message
+string result_text
+sensor_msgs/CompressedImage[] result_images
+---
+string status
+sensor_msgs/CompressedImage preview_image
