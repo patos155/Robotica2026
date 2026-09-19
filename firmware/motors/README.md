@@ -21,38 +21,39 @@ Corre en tiempo real (~10-20Hz) y no tolera retraso. Es el único componente que
 
 ```
 firmware/motors/
-├── platformio.ini
-├── README.md               ← este archivo
+├── README.md                ← este archivo
 ├── CONVENTIONS.md           ← convenciones específicas de este firmware
-└── src/
-    ├── robot_rescate.ino    ← setup()/loop() — orquestación + verificarWatchdog()
+└── movement/                ← sketch de Arduino (todavía sin platformio.ini)
+    ├── movement.ino         ← setup()/loop() — orquestación + watchdogReset()
     ├── config.h             ← pines, constantes, umbrales, DEBUG_MODE
-    ├── protocol.h            ← contrato Serial — sincronizado con
-    │                            docs/protocols/motors-protocol.md
-    ├── motors/               MotorController — único que escribe pines de motor
-    ├── sensors/               UltrasonicArray — sin dependencias del proyecto
-    ├── maneuvers/             Maneuvers — único lugar permitido usar delay()
-    ├── communication/         SerialComm — único que escribe/lee Serial (con Logger)
-    ├── remote/                RemoteControl — solo reporta estado, no decide
-    └── system/                Logger — INFO/WARNING/ERROR/DEBUG
+    ├── protocol.h           ← contrato Serial — sincronizado con
+    │                           docs/protocols/motors-protocol.md
+    └── src/
+        ├── motors/                 Motors — único que escribe pines de motor
+        ├── sensors/Ultrasonic/     UltrasonicArray — sin dependencias del proyecto
+        ├── maneuvers/              Maneuvers — único lugar permitido usar delay()
+        ├── communication/          Communication — único que escribe/lee Serial
+        ├── remote/                 Remote — solo reporta estado, no decide
+        └── system/                 Logger — INFO/WARNING/ERROR/DEBUG
 ```
 
 Ver `CONVENTIONS.md` para el grafo de dependencias, reglas de arquitectura y estilo de código.
 
 ## Protocolo Serial
 
-JSON por línea (`\n`), campo `"type"` obligatorio: `cmd`, `status`, `mode`, `sensor` (solo `"ultrasonic"`), `lidar`, `log`. Contrato completo en `docs/protocols/motors-protocol.md` — cualquier cambio aquí debe reflejarse ahí en el mismo PR.
+JSON por línea (`\n`), campo `"type"` obligatorio: `cmd` (`F`/`L`/`R`/`U`/`S`), `status` (`DONE`), `mode`, `sensor` (solo `"ultrasonic"`, los 6 HC-SR04) y `log`. Contrato completo en `docs/protocols/motors-protocol.md` — cualquier cambio aquí debe reflejarse ahí en el mismo PR.
 
 > Las lecturas de gas y humedad pertenecen al protocolo de
 > `firmware/sensors`, no a este.
 
 ## Watchdog de seguridad
 
-Si no llega un comando nuevo en ~300–500ms, los motores deben detenerse solos. Requisito no negociable — visible como `verificarWatchdog()` en `robot_rescate.ino`, llamado en cada iteración de `loop()`.
+Si no llega un comando nuevo en 500 ms (constante `timeOut` en `movement.ino`), los motores se detienen solos y se manda un log. Requisito no negociable — visible como `watchdogReset()` en `movement.ino`, llamado en cada iteración de `loop()`.
 
 ## Estado
 
 - [x] Estructura de módulos y convenciones definidas
+- [x] Watchdog implementado (`watchdogReset()`, 500 ms)
+- [ ] Que compile: el código en `Dev` falla con un carácter suelto (`z`) en `config.h:22`, con `System dbg;` en `movement.ino` sin que exista el tipo `System` (la clase es `Logger`), y sus `#include "./communication/..."` apuntan a carpetas que están dentro de `src/`
 - [ ] Migración a PlatformIO
-- [ ] Watchdog implementado
 - [ ] Confirmar modelo de placa física

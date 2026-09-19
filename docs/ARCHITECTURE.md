@@ -7,9 +7,9 @@
 │  firmware/motors   │        │ firmware/sensors   │
 │  (Arduino)         │        │  (Arduino)         │
 │                    │        │                    │
-│  Motores           │        │  Gas, temperatura  │
-│  Ultrasónicos      │        │  Humedad, sonido   │
-│  Control remoto    │        │  Polo de imán, QR* │
+│  Motores           │        │  Polo de imán      │
+│  Ultrasónicos      │        │  (otros sensores   │
+│  Control remoto    │        │  por definir)      │
 └─────────┬──────────┘        └─────────┬──────────┘
           │ Serial (USB)                │ Serial (USB)
           └──────────────┬──────────────┘
@@ -21,6 +21,7 @@
                 │  ROS2: navegación  │
                 │  LiDAR + SLAM      │
                 │  agregación datos  │
+                │  Visión: QR, mov.  │
                 └─────────┬──────────┘
                           │ WiFi
              ┌────────────┴────────────┐
@@ -34,14 +35,13 @@
                 │     dashboard     │
                 │ (laptop operador) │
                 │                   │
-                │  React — video,   │
+                │  Vue 3 — video,   │
                 │  mapa, sensores,  │
                 │  control          │
                 └───────────────────┘
 ```
 
-*QR: ubicación de la decodificación aún no decidida — ver
-`docs/CONTEXTO_PROYECTO.md`.
+`firmware/sensors` hoy solo implementa el sensor de imán. La decodificación de QR corre en `robot_ws` (visión), no en el firmware, porque el reglamento exige que sea autónoma — ver [`rules/04-caja-victima.md`](./rules/04-caja-victima.md). El sensor de gas se descartó: no aplica en el reglamento.
 
 ## Principio rector
 
@@ -78,10 +78,10 @@ Probar este esquema con muchos dispositivos WiFi alrededor simulando el caos rea
 
 ## Consideraciones de rendimiento del lado del `dashboard`
 
-Los datos de alta frecuencia (video, posición/mapa) no deben pasar por el ciclo de re-render de React — se dibujan en un `<canvas>` vía `useRef`, sincronizados con `requestAnimationFrame`. Los datos de baja frecuencia (sensores ambientales, estado de conexión) sí usan `useState` normal. El banner de "sin comunicación con el robot" debe ser imposible de ignorar (no un ícono pequeño) — el operador necesita enterarse de inmediato si se pierde el canal de telemetría.
+Los datos de alta frecuencia (video, posición/mapa) no deben guardarse en estado reactivo (`ref`/`reactive`) que dispare un re-render por cada mensaje — se dibujan en un `<canvas>` a través de una template ref, sincronizados con `requestAnimationFrame`. Los datos de baja frecuencia (lecturas de sensores, estado de conexión) sí usan `ref` normal. El video ya viaja aparte, por `web_video_server`, y se muestra con un `<img>`: no pasa por el estado reactivo. El banner de "sin comunicación con el robot" debe ser imposible de ignorar (no un ícono pequeño) — el operador necesita enterarse de inmediato si se pierde el canal de telemetría.
 
 ## Ver también
 
-- [`CONTEXTO_PROYECTO.md`](./CONTEXTO_PROYECTO.md) — resumen completo de decisiones y preguntas abiertas de todo el proyecto.
+- [`rules/`](./rules) — reglas de la competencia (RoboCup Rescue 2026D) que motivan estos requisitos.
 - [`protocols/`](./protocols) — formato exacto de cada mensaje en cada enlace.
-- `robot_ws/README.md` — detalle de los paquetes ROS2 y su responsabilidad interna.
+- [`robot_ws/README.md`](../robot_ws/README.md) — detalle de los paquetes ROS2 y su responsabilidad interna.

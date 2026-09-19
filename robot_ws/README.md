@@ -5,13 +5,15 @@ Workspace ROS2 que corre en la laptop embarcada del robot. Parte del proyecto
 
 ## Rol dentro del sistema
 
-Por ahora este workspace solo cubre **visión** (cámara + detección de QR).
-La navegación autónoma (LiDAR, SLAM, agregación de sensores) y el puente
-Serial con `firmware/motors`/`firmware/sensors` descritos en
+Por ahora este workspace solo cubre **visión** (cámara + pruebas de
+detección de QR y de movimiento). La navegación autónoma (LiDAR, SLAM,
+agregación de sensores) y el puente Serial con
+`firmware/motors`/`firmware/sensors` descritos en
 [`docs/ARCHITECTURE.md`](../docs/ARCHITECTURE.md) todavía no están
 implementados aquí — hay una exploración previa sin portar en
-[`robot_ws_legacy/`](../robot_ws_legacy) (scripts sueltos, no nodos ROS2,
-nunca probados en competencia).
+`robot_ws/legacy/`, que existe solo en las ramas `feat/codigo-sensores` y
+`dashboardCamRos2` (scripts sueltos, no nodos ROS2, nunca probados en
+competencia).
 
 ## Estructura
 
@@ -35,13 +37,14 @@ robot_ws/
 │       │   ├── qos.py                  ← QoS compartido por los topics de frames de camara
 │       │   ├── test_runner.py          ← nodo: Action server /run_test, despacha por test_id
 │       │   └── detectors/
-│       │       └── qr_detector.py      ← funcion pura detect_qr(frame), usada por test_runner
-│       └── test/                        ← linters ament (copyright, flake8, pep257) + test_qr_detector.py
+│       │       ├── qr_detector.py      ← funcion pura detect_qr(frame), usada por test_runner
+│       │       └── motion_detector.py  ← create_subtractor() y detect_motion(frame, subtractor) (MOG2), usadas por test_runner
+│       └── test/                        ← linters ament (copyright, flake8, pep257) + test_qr_detector.py y test_motion_detector.py
 ├── build/ install/ log/            ← generados por colcon, ignorados por git
 ```
 
-`robot_bringup` y `robot_core` (navegación, agregación de datos) descritos en
-el README raíz todavía no existen como paquetes — ver [Estado](#estado).
+`robot_bringup` y `robot_core` (navegación, agregación de datos) todavía no
+existen como paquetes — ver [Estado](#estado).
 
 ## Topics y actions actuales
 
@@ -131,7 +134,7 @@ de error, no una excepción.
 - [ ] Handlers de `test_runner` para hazmat y voz (la interfaz `RunTest` ya los soporta)
 - [ ] `robot_bringup` / `robot_core` — navegación, LiDAR + SLAM, agregación
       de datos. Existe una exploración previa sin integrar en
-      [`robot_ws_legacy/`](../robot_ws_legacy)
+      `robot_ws/legacy/` de las ramas `feat/codigo-sensores` y `dashboardCamRos2`
 - [ ] Puente Serial con `firmware/motors` y `firmware/sensors`
 
 ## Ver también

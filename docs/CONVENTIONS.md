@@ -44,4 +44,4 @@ Cualquier formato de mensaje que cruce un enlace entre dos componentes (Serial o
 | Un módulo que hace más de una cosa a la vez | Dificulta probar y depurar por separado |
 | Bloquear un hilo/callback crítico con I/O lento (red, disco) | El mismo motivo por el que nada crítico depende de la red |
 | Lógica de negocio en el punto de orquestación (`loop()`, `main()`, launch file) | El punto de entrada debe ser legible de un vistazo, no esconder decisiones |
-| Agregar una herramienta/librería que no reduce trabajo real | Ver el criterio de sobreingeniería aplicado al elegir React sin Redux/Router/UI kit pesado |
+| Agregar una herramienta/librería que no reduce trabajo real | Ver el criterio de sobreingeniería aplicado al elegir Vue 3 sin Pinia/Vue Router/UI kit pesado |
