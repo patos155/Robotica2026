@@ -1,4 +1,4 @@
-# DashboardCam
+# Dashboard
 
 Interfaz Vue 3 para visualizar `/inspection/image_processed` y ejecutar la
 acción ROS 2 `/execute_test` con la prueba `qr`.
@@ -38,7 +38,7 @@ sudo apt install ros-jazzy-rosbridge-suite ros-jazzy-web-video-server
 ## Ejecutar la interfaz
 
 ```bash
-cd dashboardCam
+cd dashboard
 npm install
 npm run dev
 ```

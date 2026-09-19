@@ -1,1 +1,0 @@
-# Interfaz del operador — video, mapa, sensores, control - PROXIMAMENTE
