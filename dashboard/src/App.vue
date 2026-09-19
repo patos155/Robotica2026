@@ -31,13 +31,10 @@ const socketUrl = computed(() => `ws://${host.value.trim()}:${rosbridgePort.valu
 const videoUrl = computed(() => {
   const query = new URLSearchParams({
     topic: videoTopic.value,
-    default_transport: 'compressed',
-    type: 'mjpeg',
-    width: '1280',
-    quality: '78',
+    type: 'ros_compressed',
+    qos_profile: 'sensor_data',
     client_id: `dashboard-${videoRevision.value}`,
   })
-  return `http://${host.value.trim()}:${videoPort.value}/stream?${query}`
 })
 
 const statusLabel = computed(() => ({
