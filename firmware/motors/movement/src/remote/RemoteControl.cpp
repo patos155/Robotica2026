@@ -5,7 +5,8 @@ void Remote::begin() {
     for (int i=0; i<6; i++) {
         _rcPins[i] = PINS_RC[i];
         pinMode(_rcPins[i], INPUT);
-        _chValue[i] = 0.5f;
+        // El switch (ch4) arranca en manual: sin lecturas validas nunca se entra a autonomo
+        _chValue[i] = (i == 4) ? 1.0f : 0.5f;
     }
 }
 
@@ -27,9 +28,10 @@ void Remote::_readChannel(int channel) {
     // 'PULSE_IN_TIMEOUT_US' es el tiempo máximo que esperamos a que se complete el pulso
     int rawValue = pulseIn(_rcPins[channel], HIGH, PULSE_IN_TIMEOUT_US);
     
-    // Sin pulso: canal en neutro. Si es el switch (ch4), cuenta hacia "control perdido"
+    // Sin pulso: se conserva el ultimo valor valido. Un pulso perdido aislado no debe cambiar de
+    // modo (0.5 contaria como autonomo) ni mover las ruedas; la perdida real la detecta el contador
+    // del switch (ch4), que lleva a "control perdido" tras RC_LOST_READS lecturas sin pulso.
     if (rawValue == 0) {
-        _chValue[channel] = 0.5f;
         if (channel == 4 && _lostReads < RC_LOST_READS) _lostReads++;
         return;
     }
