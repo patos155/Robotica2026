@@ -1,4 +1,5 @@
 #include "config.h"
+#include "protocol.h"
 #include "src/communication/SerialComm.h"
 #include "src/maneuvers/Maneuvers.h"
 #include "src/sensors/Ultrasonic/UltrasonicArray.h"
@@ -51,26 +52,32 @@ void loop() {
         commu.sendSensorData(&ultraSensors);
         // Como legacy: basta un sensor frontal libre para seguir escuchando a Python
         if (ultraSensors.isFLL() || ultraSensors.isFRL()) {
-            String mensaje = commu.receiveCommand();
-            
-            // Si el comando no está vacio, actualizamos el watchdog
-            if (mensaje.length() > 0) {
+            char cmd = commu.receiveCommand();
+
+            // Si llego un comando, actualizamos el watchdog
+            if (cmd != '\0') {
                 lastCommandTime = millis();
             }
-            
-            if (mensaje == "F") {
-                motors.move(SPEED_LEFT_FRONT, SPEED_RIGHT_FRONT);
-            } else if (mensaje == "L") {      // el aviso de fin lo manda Maneuvers
-                commu.sendLog("Giro Izquierda");
-                maneu.turnLeft();
-            } else if (mensaje == "R") {
-                commu.sendLog("Giro Derecha");
-                maneu.turnRight();
-            } else if (mensaje == "U") {
-                commu.sendLog("Giro en U");
-                maneu.uTurn();
-            } else if (mensaje == "S") {      // receiveCommand() tambien devuelve "S" ante un comando desconocido
-                motors.stop();
+
+            switch (cmd) {
+                case Cmd::cmdForward:
+                    motors.move(SPEED_LEFT_FRONT, SPEED_RIGHT_FRONT);
+                    break;
+                case Cmd::cmdLeft:          // el aviso de fin lo manda Maneuvers
+                    commu.sendLog("Giro Izquierda");
+                    maneu.turnLeft();
+                    break;
+                case Cmd::cmdRight:
+                    commu.sendLog("Giro Derecha");
+                    maneu.turnRight();
+                    break;
+                case Cmd::cmdUturn:
+                    commu.sendLog("Giro en U");
+                    maneu.uTurn();
+                    break;
+                case Cmd::cmdStop:          // receiveCommand() tambien devuelve cmdStop ante un comando desconocido
+                    motors.stop();
+                    break;
             }
         } else {
             // Ambos sensores frontales bloqueados

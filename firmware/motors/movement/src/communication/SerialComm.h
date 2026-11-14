@@ -11,7 +11,7 @@
 class Communication {
     public:
         void begin(long baudRate=9600);
-        String receiveCommand();
+        char receiveCommand();      // un Cmd:: de protocol.h, o '\0' si no hay comando
         void flushInput();
         void sendSensorData(UltrasonicArray* sensors);
         void sendStatusDone();

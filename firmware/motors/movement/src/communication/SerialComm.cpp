@@ -9,30 +9,50 @@ void Communication::begin(long baudRate) {
     Serial.setTimeout(50);
 }
 
-String Communication::receiveCommand() {
+char Communication::receiveCommand() {
     // Recibe del python los comandos F = Adelante, L = Izquierda, R = Derecha, U = Vuelta en U, S = alto
-    if (!Serial.available()) return "";
-    String cmd = Serial.readStringUntil('\n');
-    cmd.trim();     // tolera "\r\n"
-    if (cmd.length() == 0) return "";
+    if (!Serial.available()) return '\0';
+
+    // Cabe el JSON del protocolo (~30 bytes).
+    // ponytail: una linea mas larga se parte y cada parte cuenta como comando desconocido (paro)
+    constexpr size_t CMD_BUFFER_SIZE = 40;
+    char line[CMD_BUFFER_SIZE];
+    line[Serial.readBytesUntil('\n', line, CMD_BUFFER_SIZE - 1)] = '\0';
+
+    // trim: tolera "\r\n" y espacios
+    char* cmd = line;
+    while (isspace(*cmd)) cmd++;
+    char* end = cmd + strlen(cmd);
+    while (end > cmd && isspace(end[-1])) *--end = '\0';
+    if (*cmd == '\0') return '\0';
 
     if (!LEGACY_PROTOCOL) {
         // {"type": "cmd", "value": "F"} -> F
-        int key = cmd.indexOf("\"value\"");
-        int colon = (key < 0) ? -1 : cmd.indexOf(':', key);
-        int start = (colon < 0) ? -1 : cmd.indexOf('"', colon);
-        int end = (start < 0) ? -1 : cmd.indexOf('"', start + 1);
-        cmd = (end < 0) ? "" : cmd.substring(start + 1, end);
+        char* key = strstr(cmd, "\"value\"");
+        char* colon = key ? strchr(key, ':') : nullptr;
+        char* start = colon ? strchr(colon, '"') : nullptr;
+        char* close = start ? strchr(start + 1, '"') : nullptr;
+        if (close) {
+            *close = '\0';
+            cmd = start + 1;
+        } else {
+            *cmd = '\0';
+        }
     }
 
-    if (cmd.length() == 1) {
-        char c = cmd[0];
-        if (c == Cmd::cmdForward || c == Cmd::cmdLeft || c == Cmd::cmdRight ||
-            c == Cmd::cmdUturn || c == Cmd::cmdStop) return cmd;
+    if (cmd[0] != '\0' && cmd[1] == '\0') {
+        switch (cmd[0]) {
+            case Cmd::cmdForward:
+            case Cmd::cmdLeft:
+            case Cmd::cmdRight:
+            case Cmd::cmdUturn:
+            case Cmd::cmdStop:
+                return cmd[0];
+        }
     }
     // Comando desconocido: se detiene, como legacy
     sendLog(F("Comando desconocido, motores detenidos"));
-    return String(Cmd::cmdStop);
+    return Cmd::cmdStop;
 }
 
 void Communication::flushInput() {
