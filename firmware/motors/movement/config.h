@@ -19,7 +19,7 @@ constexpr int PIN_PWM_RIGHT     = 7;
 constexpr int PIN_RELAY_LEFT_1  = 10;
 constexpr int PIN_RELAY_LEFT_2  = 9;
 constexpr int PIN_RELAY_RIGHT_1 = 15;
-constexpr int PIN_RELAY_RIGHT_2 = 16;z
+constexpr int PIN_RELAY_RIGHT_2 = 16;
 
 // Sensores ultrasonicos
 // conexiones de triger y echo Izquierdo trasero 

@@ -1,5 +1,5 @@
 #include "System.h"
-#include "config.h"
+#include "../../config.h"
 
 Logger::Logger() {}
 

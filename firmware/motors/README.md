@@ -54,6 +54,6 @@ Si no llega un comando nuevo en 500 ms (constante `timeOut` en `movement.ino`), 
 
 - [x] Estructura de módulos y convenciones definidas
 - [x] Watchdog implementado (`watchdogReset()`, 500 ms)
-- [ ] Que compile: el código en `Dev` falla con un carácter suelto (`z`) en `config.h:22`, con `System dbg;` en `movement.ino` sin que exista el tipo `System` (la clase es `Logger`), y sus `#include "./communication/..."` apuntan a carpetas que están dentro de `src/`
+- [x] Que compile (Arduino Mega 2560, sin errores ni warnings con `-Wall`)
 - [ ] Migración a PlatformIO
 - [ ] Confirmar modelo de placa física

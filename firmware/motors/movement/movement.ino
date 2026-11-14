@@ -1,17 +1,17 @@
 #include "config.h"
-#include "./communication/SerialComm.h"
-#include "./maneuvers/Maneuvers.h"
-#include "./sensors/Ultrasonic/UltrasonicArray.h"
-#include "./motors/Motors.h"
-#include "./remote/RemoteControl.h"
-#include "./system/System.h"
+#include "src/communication/SerialComm.h"
+#include "src/maneuvers/Maneuvers.h"
+#include "src/sensors/Ultrasonic/UltrasonicArray.h"
+#include "src/motors/Motors.h"
+#include "src/remote/RemoteControl.h"
+#include "src/system/System.h"
 
 Motors motors;
 UltrasonicArray ultraSensors;
 Remote rc;
 Maneuvers maneu;
 Communication commu;
-System dbg;
+Logger dbg;
 
 unsigned long lastCommandTime = 0;
 const unsigned long timeOut = 500;

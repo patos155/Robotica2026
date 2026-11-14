@@ -1,5 +1,5 @@
-#include "../maneuvers/Maneuvers.h"
-#include "config.h"
+#include "Maneuvers.h"
+#include "../../config.h"
 
 void Maneuvers::begin(Motors * motorsInstance, UltrasonicArray * sensorsInstance, Communication* comm) {
     _motors = motorsInstance;

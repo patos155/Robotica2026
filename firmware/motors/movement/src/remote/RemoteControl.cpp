@@ -1,5 +1,5 @@
-#include "./remote/RemoteControl.h"
-#include "config.h"
+#include "RemoteControl.h"
+#include "../../config.h"
 
 void Remote::begin() {
     for (int i=0; i<6; i++) {

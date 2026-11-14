@@ -1,5 +1,5 @@
 #include "UltrasonicArray.h"
-#include "config.h"
+#include "../../../config.h"
 
 void UltrasonicArray::begin() {
     // Configuracion de pines del lado izquierdo

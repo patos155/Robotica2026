@@ -6,9 +6,9 @@
 
 #pragma once
 #include <Arduino.h>
-#include "./communication/SerialComm.h"
-#include "./remote/RemoteControl.h"
-#include "./sensors/Ultrasonic/UltrasonicArray.h"
+#include "../communication/SerialComm.h"
+#include "../remote/RemoteControl.h"
+#include "../sensors/Ultrasonic/UltrasonicArray.h"
 
 class Logger {
 private:
