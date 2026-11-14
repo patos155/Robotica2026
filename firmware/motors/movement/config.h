@@ -9,7 +9,7 @@
 //#define DEBUG_MODE 
 
 constexpr int PINS_RC[6]        = {25,29,27,31,33,35};
-constexpr int pulseInDelay      = 30000;
+constexpr unsigned long PULSE_IN_TIMEOUT_US = 30000;      // tope de pulseIn() en RC y ultrasonicos
 // Lecturas seguidas sin pulso en el canal del switch (ch4) para dar el control por perdido.
 // Evita que un pulso perdido aislado detenga el robot (Python legacy manda "F" una sola vez).
 constexpr uint8_t RC_LOST_READS = 3;
@@ -23,6 +23,9 @@ constexpr int PIN_RELAY_LEFT_1  = 10;
 constexpr int PIN_RELAY_LEFT_2  = 9;
 constexpr int PIN_RELAY_RIGHT_1 = 15;
 constexpr int PIN_RELAY_RIGHT_2 = 16;
+// Niveles para energizar o soltar un rele (no son direcciones)
+constexpr uint8_t RELAY_ON      = HIGH;
+constexpr uint8_t RELAY_OFF     = LOW;
 
 // Sensores ultrasonicos
 // conexiones de triger y echo Izquierdo trasero 
@@ -54,11 +57,17 @@ constexpr int LATERAL_DISTANCE      = 25;         // Distancia lateral
 constexpr int FRONT_DISTANCE        = 25;         // Distancia delantera
 // Distancia que se reporta sin eco (no hay objeto cerca) o fuera de rango: se lee como "despejado"
 constexpr long MAX_DISTANCE_CM      = 400;
+// Pausa entre disparos de ultrasonicos para que un sensor no lea el eco del anterior.
+// Excepcion documentada a "delay() solo en Maneuvers".
+constexpr unsigned long ULTRASONIC_GAP_MS = 5;
 
 // Tope de cada ciclo de alineacion con ultrasonicos en Maneuvers (perilla de calibracion).
 // Durante una maniobra ni el control remoto ni el watchdog se revisan: sin este tope, un sensor
 // fallando haria girar al robot para siempre.
 constexpr unsigned long ALIGN_TIMEOUT_MS = 5000;
+
+// Watchdog del modo autonomo (solo protocolo JSON): sin comando nuevo en este tiempo se detiene
+constexpr unsigned long CMD_TIMEOUT_MS = 500;
 
 // Compatibilidad con nagevacion_legacy.py (raiz del repo, texto plano). Con true:
 //  - Comandos: la linea exacta "F", "L", "R", "U" o "S". Fin de maniobra: "T".
@@ -76,6 +85,3 @@ constexpr int SPEED_LEFT_FRONT      = 150;
 constexpr int SPEED_LEFT_TURN       = 200;
 constexpr int SPEED_RIGHT_TURN      = SPEED_LEFT_TURN;
 constexpr int SPEED_RIGHT_FRONT     = SPEED_LEFT_FRONT;
-
-constexpr uint8_t  MOT_FORWARD      = HIGH;
-constexpr uint8_t  MOT_STOP         = LOW;

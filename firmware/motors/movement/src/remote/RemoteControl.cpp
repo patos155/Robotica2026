@@ -20,8 +20,8 @@ void Remote::_readChannel(int channel) {
     // Lee la duración del pulso (en microsegundos) en el pin especificado para el canal dado
     // 'rcPins' es un array que contiene los pines de entrada para cada canal
     // 'HIGH' especifica que estamos midiendo la duración del pulso alto
-    // 'pulseInDelay' es el tiempo máximo que esperamos a que se complete el pulso
-    int rawValue = pulseIn(_rcPins[channel], HIGH, pulseInDelay);
+    // 'PULSE_IN_TIMEOUT_US' es el tiempo máximo que esperamos a que se complete el pulso
+    int rawValue = pulseIn(_rcPins[channel], HIGH, PULSE_IN_TIMEOUT_US);
     
     // Sin pulso: canal en neutro. Si es el switch (ch4), cuenta hacia "control perdido"
     if (rawValue == 0) {

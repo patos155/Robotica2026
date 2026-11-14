@@ -25,26 +25,27 @@ void UltrasonicArray::begin() {
 }
 
 void UltrasonicArray::update() {
-    // Realizar las mediciones fisicas en centimetros
+    // Realizar las mediciones fisicas en centimetros. La pausa entre disparos evita que un sensor
+    // lea el eco del anterior
     _lrm = _readUltra(PIN_LEFT_REAR_TRIGGER, PIN_LEFT_REAR_ECHO);
-    delay(5);
+    delay(ULTRASONIC_GAP_MS);
     _lfm = _readUltra(PIN_LEFT_FRONT_TRIGGER, PIN_LEFT_FRONT_ECHO);
-    delay(5);
+    delay(ULTRASONIC_GAP_MS);
     _flm = _readUltra(PIN_FRONT_LEFT_TRIGGER, PIN_FRONT_LEFT_ECHO);
-    delay(5);
+    delay(ULTRASONIC_GAP_MS);
     _frm = _readUltra(PIN_FRONT_RIGHT_TRIGGER, PIN_FRONT_RIGHT_ECHO);
-    delay(5);
+    delay(ULTRASONIC_GAP_MS);
     _rfm = _readUltra(PIN_RIGHT_FRONT_TRIGGER, PIN_RIGHT_FRONT_ECHO);
-    delay(5);
+    delay(ULTRASONIC_GAP_MS);
     _rrm = _readUltra(PIN_RIGHT_REAR_TRIGGER, PIN_RIGHT_REAR_ECHO);
 
     // Devuelve "true" si el camino esta libre, false si hay obstaculo
-    _lrl = (_lrm > LATERAL_DISTANCE) ? 1 : 0;
-    _lfl = (_lfm > LATERAL_DISTANCE) ? 1 : 0;
-    _fll = (_flm > FRONT_DISTANCE) ? 1 : 0;
-    _frl = (_frm > FRONT_DISTANCE) ? 1 : 0;
-    _rfl = (_rfm > LATERAL_DISTANCE) ? 1 : 0;
-    _rrl = (_rrm > LATERAL_DISTANCE) ? 1 : 0;
+    _lrl = _lrm > LATERAL_DISTANCE;
+    _lfl = _lfm > LATERAL_DISTANCE;
+    _fll = _flm > FRONT_DISTANCE;
+    _frl = _frm > FRONT_DISTANCE;
+    _rfl = _rfm > LATERAL_DISTANCE;
+    _rrl = _rrm > LATERAL_DISTANCE;
 
 }
 
@@ -54,7 +55,7 @@ long UltrasonicArray::_readUltra(int trigPin, int echoPin) {
     delayMicroseconds(10);
     digitalWrite(trigPin, LOW);
 
-    long duration = pulseIn(echoPin, HIGH, pulseInDelay);
+    long duration = pulseIn(echoPin, HIGH, PULSE_IN_TIMEOUT_US);
     // Sin objeto cerca el HC-SR04 no regresa eco dentro del timeout (pulseIn da 0): se reporta
     // MAX_DISTANCE_CM ("despejado"), igual que legacy, que lo leia como una distancia grande
     if (duration == 0) return MAX_DISTANCE_CM;

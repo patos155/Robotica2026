@@ -15,7 +15,6 @@ Logger dbg;
 bool rcWasLost = false;
 
 unsigned long lastCommandTime = 0;
-const unsigned long timeOut = 500;
 
 void setup() {
     commu.begin(9600);
@@ -46,12 +45,12 @@ void loop() {
 
     // ----------------------------- MODO AUTONOMO -----------------------------------
     if (rc.isAutonomousMode()) {
-        if (!LEGACY_PROTOCOL) watchdogReset();  // por que no en legacy: ver LEGACY_PROTOCOL en config.h
+        if (!LEGACY_PROTOCOL) checkWatchdog();  // por que no en legacy: ver LEGACY_PROTOCOL en config.h
         ultraSensors.update();
         dbg.printChannels(rc);
         commu.sendSensorData(&ultraSensors);
         // Como legacy: basta un sensor frontal libre para seguir escuchando a Python
-        if (ultraSensors.isFLL() == 1 || ultraSensors.isFRL() == 1) {
+        if (ultraSensors.isFLL() || ultraSensors.isFRL()) {
             String mensaje = commu.receiveCommand();
             
             // Si el comando no está vacio, actualizamos el watchdog
@@ -76,10 +75,10 @@ void loop() {
         } else {
             // Ambos sensores frontales bloqueados
             lastCommandTime = millis();
-            if (ultraSensors.isLFL() == 1 && ultraSensors.isRFL() == 0){
+            if (ultraSensors.isLFL() && !ultraSensors.isRFL()) {
                 commu.sendLog("Giro izquierdo (con ultrasonicos)");
                 maneu.turnLeft();
-            } else if (ultraSensors.isLFL() == 0 && ultraSensors.isRFL() == 1) {
+            } else if (!ultraSensors.isLFL() && ultraSensors.isRFL()) {
                 commu.sendLog("Giro derecho (con ultrasonicos)");
                 maneu.turnRight();
             } else {
@@ -112,10 +111,11 @@ void loop() {
     }
 }
 
-// Solo aplica en modo autonomo; el log se manda una vez por disparo para no saturar el Serial
-void watchdogReset() {
+// Solo aplica en modo autonomo; no reinicia nada, solo verifica. El log se manda una vez por
+// disparo para no saturar el Serial
+void checkWatchdog() {
     static bool fired = false;
-    if (millis() - lastCommandTime > timeOut) {
+    if (millis() - lastCommandTime > CMD_TIMEOUT_MS) {
         motors.stop();
         if (!fired) commu.sendLog("Watchdog: No se recibieron comandos, deteniendo motores");
         fired = true;
