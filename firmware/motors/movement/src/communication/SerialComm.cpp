@@ -104,6 +104,10 @@ void Communication::sendLog(String message) {
         return;
     }
     Serial.print("{\"type\": \"log\", \"value\": \"");
-    Serial.print(message);
+    // Escapa " y \ para que la linea siga siendo JSON valido
+    for (const char* c = message.c_str(); *c; c++) {
+        if (*c == '"' || *c == '\\') Serial.write('\\');
+        Serial.write(*c);
+    }
     Serial.println("\"}");
 }

@@ -14,6 +14,7 @@ Maneuvers maneu;
 Communication commu;
 Logger dbg;
 bool rcWasLost = false;
+bool inEmergency = false;                   // "Alto Emergencia" se avisa una vez por entrada
 
 unsigned long lastCommandTime = 0;
 
@@ -50,6 +51,8 @@ void loop() {
         ultraSensors.update();
         dbg.printChannels(rc);
         commu.sendSensorData(&ultraSensors);
+        bool wasEmergency = inEmergency;
+        inEmergency = false;
         // Como legacy: basta un sensor frontal libre para seguir escuchando a Python
         if (ultraSensors.isFLL() || ultraSensors.isFRL()) {
             char cmd = commu.receiveCommand();
@@ -90,7 +93,8 @@ void loop() {
                 maneu.turnRight();
             } else {
                 motors.stop();
-                commu.sendLog("----------------- Alto Emergencia --------------");
+                inEmergency = true;
+                if (!wasEmergency) commu.sendLog("----------------- Alto Emergencia --------------");
             }
         }
     } else {
