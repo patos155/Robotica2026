@@ -47,6 +47,18 @@ Fuente de verdad para ambos lados: si cambia algo aquí, debe cambiar en el mism
 - `mode`: refleja el estado físico del switch del control remoto, no una decisión de `robot_ws`.
 - `sensor`/`ultrasonic`: distancias en cm de los 6 sensores. Nomenclatura: `dist` + posición (`F`ront/`L`eft/`R`ight/`D`erecha... — **confirmar convención exacta de nombres con quien mantenga `UltrasonicArray.cpp`**, aquí se replica tal cual del README original.
 
+## Modo legacy
+
+Mientras `motors_bridge` no exista, el robot lo controla `nagevacion_legacy.py` (raíz del repo), que habla texto plano. Para ese script, `firmware/motors/movement/config.h` tiene `LEGACY_PROTOCOL = true`. Cuando está activo:
+
+- **Comandos:** la línea exacta `F`, `L`, `R`, `U` o `S`, sin JSON. Se tolera `\r\n`. Un comando desconocido detiene los motores.
+- **Fin de maniobra:** `T` en vez de `{"type": "status", "value": "DONE"}`. Se manda una sola vez por maniobra, también cuando el giro lo disparan los ultrasónicos. Python se bloquea tras `L`/`R` hasta recibirlo.
+- **Logs:** texto plano de una línea con prefijo `LOG: `. Nunca empiezan con `{` (Python los tomaría como sensores) ni son exactamente `T`.
+- **Sensores:** no se envían, como legacy. A 9600 baud esa línea bloquea el loop entre 90 y 150 ms.
+- **Watchdog:** desactivado. Python manda `F` una sola vez, así que un watchdog de 500 ms detendría el robot a medio segundo de cada `F`. Trade-off aceptado: si Python se cae, el robot sigue con el último comando hasta que reaccionen los ultrasónicos frontales, se pase el switch a manual o se pierda el control remoto.
+
+Con `LEGACY_PROTOCOL = false` aplica el protocolo JSON de este documento.
+
 ## Watchdog relacionado
 
 Si `robot_ws` deja de mandar `cmd` por más de ~300-500ms mientras el Arduino está en modo autónomo, el Arduino debe detenerse por su cuenta (watchdog local, no depende de recibir un `cmd: S` explícito). Ver `docs/CONVENTIONS.md` → "Cuándo algo necesita un watchdog".

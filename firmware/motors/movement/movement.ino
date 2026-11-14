@@ -46,7 +46,7 @@ void loop() {
 
     // ----------------------------- MODO AUTONOMO -----------------------------------
     if (rc.isAutonomousMode()) {
-        watchdogReset();
+        if (!LEGACY_PROTOCOL) watchdogReset();  // por que no en legacy: ver LEGACY_PROTOCOL en config.h
         ultraSensors.update();
         dbg.printChannels(rc);
         commu.sendSensorData(&ultraSensors);
@@ -60,19 +60,16 @@ void loop() {
             
             if (mensaje == "F") {
                 motors.move(SPEED_LEFT_FRONT, SPEED_RIGHT_FRONT);
-            } else if (mensaje == "L") {
+            } else if (mensaje == "L") {      // el aviso de fin lo manda Maneuvers
                 commu.sendLog("Giro Izquierda");
                 maneu.turnLeft();
-                commu.sendStatusDone();
             } else if (mensaje == "R") {
                 commu.sendLog("Giro Derecha");
                 maneu.turnRight();
-                commu.sendStatusDone();
             } else if (mensaje == "U") {
                 commu.sendLog("Giro en U");
                 maneu.uTurn();
-                commu.sendStatusDone();
-            } else if (mensaje == "S") {
+            } else if (mensaje == "S") {      // receiveCommand() tambien devuelve "S" ante un comando desconocido
                 motors.stop();
             }
         } else {

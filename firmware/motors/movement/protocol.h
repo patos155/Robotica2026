@@ -12,4 +12,5 @@ namespace Cmd{
 // Definicion de estados enviados del Arduino
 namespace Status {
     const char* const Done      = "DONE";
+    const char* const DoneLegacy = "T";     // fin de maniobra con LEGACY_PROTOCOL (nagevacion_legacy.py)
 }

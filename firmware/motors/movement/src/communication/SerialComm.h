@@ -12,6 +12,7 @@ class Communication {
     public:
         void begin(long baudRate=9600);
         String receiveCommand();
+        void flushInput();
         void sendSensorData(UltrasonicArray* sensors);
         void sendStatusDone();
         void sendMode(String mode);
