@@ -12,6 +12,7 @@ Remote rc;
 Maneuvers maneu;
 Communication commu;
 Logger dbg;
+bool rcWasLost = false;
 
 unsigned long lastCommandTime = 0;
 const unsigned long timeOut = 500;
@@ -32,6 +33,16 @@ void loop() {
 
     int leftTargetSpeed = 0;
     int rightTargetSpeed = 0;
+
+    // ----------------------------- CONTROL PERDIDO -----------------------------------
+    // Sin señal del control el robot se detiene; no entra a modo autonomo
+    if (rc.isSignalLost()) {
+        motors.stop();
+        if (!rcWasLost) commu.sendLog("Control remoto perdido, motores detenidos");
+        rcWasLost = true;
+        return;
+    }
+    rcWasLost = false;
 
     // ----------------------------- MODO AUTONOMO -----------------------------------
     if (rc.isAutonomousMode()) {

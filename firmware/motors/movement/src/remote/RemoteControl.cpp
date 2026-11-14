@@ -23,11 +23,13 @@ void Remote::_readChannel(int channel) {
     // 'pulseInDelay' es el tiempo máximo que esperamos a que se complete el pulso
     int rawValue = pulseIn(_rcPins[channel], HIGH, pulseInDelay);
     
-    //Si el control se apaga o pierde conexion entra al modo autonomo
+    // Sin pulso: canal en neutro. Si es el switch (ch4), cuenta hacia "control perdido"
     if (rawValue == 0) {
-        _chValue[channel] = (channel == 4) ? 0.0f : 0.5f;
+        _chValue[channel] = 0.5f;
+        if (channel == 4 && _lostReads < RC_LOST_READS) _lostReads++;
         return;
     }
+    if (channel == 4) _lostReads = 0;
 
     // Convierte el valor leído (rawValue) de un rango de 1000 a 2000 microsegundos a un rango de 0.0 a 1.0
     float val = _fmap((float)rawValue, 1000.0f, 2000.0f, 0.0f, 1.0f);
@@ -41,7 +43,11 @@ float Remote::_fmap(float x, float in_min, float in_max, float out_min, float ou
 return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-bool Remote::isAutonomousMode() const { 
+bool Remote::isSignalLost() const {
+    return _lostReads >= RC_LOST_READS;
+}
+
+bool Remote::isAutonomousMode() const {
     return _chValue[4] <= 0.5f; 
 }
 

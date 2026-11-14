@@ -11,12 +11,14 @@ class Remote {
     public:
         void begin();
         void update();
+        bool isSignalLost() const;
         bool isAutonomousMode() const;
         float getChannelValue(int channel) const;
 
     private:
         int _rcPins[6];
         float _chValue[6];
+        uint8_t _lostReads = 0;
         void _readChannel(int channel);
         float _fmap(float x, float in_min, float in_max, float out_min, float out_max);
 };

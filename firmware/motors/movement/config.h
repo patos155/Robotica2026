@@ -10,6 +10,9 @@
 
 constexpr int PINS_RC[6]        = {25,29,27,31,33,35};
 constexpr int pulseInDelay      = 30000;
+// Lecturas seguidas sin pulso en el canal del switch (ch4) para dar el control por perdido.
+// Evita que un pulso perdido aislado detenga el robot (Python legacy manda "F" una sola vez).
+constexpr uint8_t RC_LOST_READS = 3;
 
 //pines para control de velocidad de arranque 
 constexpr int PIN_PWM_LEFT      = 6;
