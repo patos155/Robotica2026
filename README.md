@@ -82,7 +82,7 @@ Al 2026-09-18, en la rama `Dev`.
 - [ ] Pendientes del reglamento: ver [`docs/rules/PENDIENTES.md`](./docs/rules/PENDIENTES.md)
 
 **Pendiente de construir:**
-- [ ] `firmware/motors` — hacer que compile (carácter suelto `z` en `config.h:22`, `System dbg;` sin tipo `System` en `movement.ino`, `#include` sin `src/`), migrar a PlatformIO y poner al día su `CONVENTIONS.md` (aún menciona `robot_rescate.ino` y `verificarWatchdog()`)
+- [ ] `firmware/motors` — migrar a PlatformIO. Ya compila y su `CONVENTIONS.md` está al día; mientras no exista el puente Serial de `robot_ws` habla el protocolo legacy de `nagevacion_legacy.py` (`LEGACY_PROTOCOL` en `config.h`)
 - [ ] `firmware/sensors` — solo tiene `MagnetSensor` (lectura del polo bajo demanda con `read_sensors`); falta su README/CONVENTIONS y definir si hace falta otro sensor para la caja de víctima
 - [ ] `robot_ws` — ya tiene visión (cámara, compresión, pruebas QR y movimiento bajo `/run_test`); falta:
   - handlers de `test_runner` para hazmat y audio bidireccional

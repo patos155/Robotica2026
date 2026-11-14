@@ -11,8 +11,8 @@ Código en inglés. Comentarios y documentación en español.
 | Elemento | Convención | Ejemplo |
 |---|---|---|
 | Variables, funciones | `camelCase` | `sensorDistance`, `readSensor()` |
-| Clases | `PascalCase` | `MotorController` |
-| Constantes, pines | `UPPER_SNAKE_CASE`, prefijo `PIN_` para pines | `PWM_FORWARD`, `PIN_TRIG_FL` |
+| Clases | `PascalCase` | `Motors` |
+| Constantes, pines | `UPPER_SNAKE_CASE`, prefijo `PIN_` para pines | `CMD_TIMEOUT_MS`, `PIN_PWM_LEFT` |
 | Booleanos | prefijo `is`/`has` | `isObstacleDetected` |
 | Atributos privados | prefijo `_` | `_distFL` |
 
@@ -30,35 +30,38 @@ Explican el **por qué**, no el qué. Encabezado breve en cada `.h` describiendo
 ## Grafo de dependencias permitido
 
 ```
-robot_rescate.ino
-   ├── SerialComm      usa → Maneuvers, MotorController
-   ├── RemoteControl   usa → MotorController
-   ├── Maneuvers       usa → MotorController, UltrasonicArray
-   └── UltrasonicArray, MotorController → sin dependencias del proyecto (solo config.h)
+movement.ino
+   ├── Maneuvers       usa → Motors, UltrasonicArray, Communication
+   │                   recibe → función de aborto bool (*shouldAbort)() definida en movement.ino
+   ├── Logger          usa → Communication, Remote, UltrasonicArray
+   ├── Communication   usa → UltrasonicArray
+   └── Motors, UltrasonicArray, Remote → sin dependencias del proyecto (solo config.h)
 ```
+
+`Maneuvers` no incluye `Remote`: para abortar una maniobra con el control remoto recibe en `begin()` un puntero a función (`shouldAbortManeuver()` en `movement.ino`).
 
 ## Reglas de arquitectura (no negociables)
 
-- Solo `MotorController` escribe en pines de motor.
-- Solo `SerialComm` y `Logger` escriben en `Serial`.
+- Solo `Motors` escribe en pines de motor.
+- Solo `Communication` escribe en `Serial` (`Logger` lo hace a través de `Communication`).
 - `config.h` es el único lugar con números de pin.
-- `loop()` no contiene lógica de negocio — decisiones como "modo autónomo ignora joystick" viven en `robot_rescate.ino`, no dentro de `RemoteControl`.
-- `RemoteControl` solo reporta estado del switch/joystick — nunca decide qué hacer con esa información.
-- `delay()` solo permitido dentro de `Maneuvers`. Candidato a reemplazarse por `millis()` si superficies irregulares dan problemas de alineación.
+- `loop()` no contiene lógica de negocio — decisiones como "modo autónomo ignora joystick" viven en `movement.ino`, no dentro de `Remote`.
+- `Remote` solo reporta estado del switch/joystick — nunca decide qué hacer con esa información.
+- Esperas largas solo dentro de `Maneuvers`, con `_wait()`, que consulta la función de aborto en cada vuelta. `delay()` solo para pausas cortas de hardware, documentadas en `config.h`: `RELAY_SWITCH_MS` en `Motors` (los relés asientan antes de aplicar PWM) y `ULTRASONIC_GAP_MS` en `UltrasonicArray` (un sensor no lee el eco del anterior).
 - Inicialización de hardware en `begin()` llamado desde `setup()` — nunca en constructores.
-- Dirección de motores vía `MOT_FORWARD`/`MOT_BACKWARD` de `config.h` — nunca `HIGH`/`LOW` hardcodeado.
+- Relés vía `RELAY_ON`/`RELAY_OFF` de `config.h` (niveles para energizar un relé, no direcciones) — nunca `HIGH`/`LOW` hardcodeado. Los relés nunca se conmutan con PWM aplicado.
 - Lecturas de ultrasonido sin eco o fuera de rango devuelven `MAX_DISTANCE_CM` de `config.h` ("despejado"), como legacy: un HC-SR04 sin objeto cerca no devuelve eco dentro del timeout.
-- **Watchdog obligatorio:** función explícita `verificarWatchdog()` en `robot_rescate.ino`, llamada en cada `loop()`. Detiene motores si no llega comando nuevo en ~300–500ms.
+- **Watchdog obligatorio:** función explícita `checkWatchdog()` en `movement.ino`, llamada en cada `loop()` del modo autónomo. Detiene motores si no llega comando nuevo en `CMD_TIMEOUT_MS` (500 ms). Excepción: desactivado con `LEGACY_PROTOCOL = true`, porque `nagevacion_legacy.py` manda `F` una sola vez (ver `config.h`).
 
 ## Logging
 
 `Logger` con 4 niveles: `INFO`, `WARNING`, `ERROR`, `DEBUG`. Controlado por `#define DEBUG_MODE` en `config.h` — inactivo, solo se envían `WARNING`/`ERROR`. Strings siempre con macro `F()`.
 
 ```cpp
-Logger::info(F("Sistema iniciado"));
-Logger::debug(F("distFL="), ultrasonics.getDistFL());
+dbg.info(F("Sistema iniciado"));                      // dbg: instancia de Logger en movement.ino
+dbg.debug(F("distFL="), (int)ultraSensors.getFLM());
 ```
 
 ## Protocolo Serial
 
-JSON por línea, campo `"type"` obligatorio. Cualquier cambio a `protocol.h` debe reflejarse en el mismo PR en `docs/protocols/motors-protocol.md`.
+JSON por línea, campo `"type"` obligatorio. Excepción: con `LEGACY_PROTOCOL = true` se habla texto plano para `nagevacion_legacy.py` (ver "Modo legacy" en `docs/protocols/motors-protocol.md`). Cualquier cambio a `protocol.h` debe reflejarse en el mismo PR en `docs/protocols/motors-protocol.md`.

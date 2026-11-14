@@ -24,14 +24,14 @@ firmware/motors/
 ├── README.md                ← este archivo
 ├── CONVENTIONS.md           ← convenciones específicas de este firmware
 └── movement/                ← sketch de Arduino (todavía sin platformio.ini)
-    ├── movement.ino         ← setup()/loop() — orquestación + watchdogReset()
+    ├── movement.ino         ← setup()/loop() — orquestación + checkWatchdog()
     ├── config.h             ← pines, constantes, umbrales, DEBUG_MODE
     ├── protocol.h           ← contrato Serial — sincronizado con
     │                           docs/protocols/motors-protocol.md
     └── src/
         ├── motors/                 Motors — único que escribe pines de motor
         ├── sensors/Ultrasonic/     UltrasonicArray — sin dependencias del proyecto
-        ├── maneuvers/              Maneuvers — único lugar permitido usar delay()
+        ├── maneuvers/              Maneuvers — único con esperas largas, abortables con el control
         ├── communication/          Communication — único que escribe/lee Serial
         ├── remote/                 Remote — solo reporta estado, no decide
         └── system/                 Logger — INFO/WARNING/ERROR/DEBUG
@@ -43,17 +43,21 @@ Ver `CONVENTIONS.md` para el grafo de dependencias, reglas de arquitectura y est
 
 JSON por línea (`\n`), campo `"type"` obligatorio: `cmd` (`F`/`L`/`R`/`U`/`S`), `status` (`DONE`), `mode`, `sensor` (solo `"ultrasonic"`, los 6 HC-SR04) y `log`. Contrato completo en `docs/protocols/motors-protocol.md` — cualquier cambio aquí debe reflejarse ahí en el mismo PR.
 
+Mientras no exista `motors_bridge`, `LEGACY_PROTOCOL = true` en `config.h` cambia a texto plano para `nagevacion_legacy.py`: comandos `F`/`L`/`R`/`U`/`S` sin JSON, `T` al terminar cada maniobra, `LOG: ...` y `MODE: ...`. Detalle en la sección "Modo legacy" del contrato.
+
 > Las lecturas de gas y humedad pertenecen al protocolo de
 > `firmware/sensors`, no a este.
 
 ## Watchdog de seguridad
 
-Si no llega un comando nuevo en 500 ms (constante `timeOut` en `movement.ino`), los motores se detienen solos y se manda un log. Requisito no negociable — visible como `watchdogReset()` en `movement.ino`, llamado en cada iteración de `loop()`.
+En modo autónomo, si no llega un comando nuevo en 500 ms (constante `CMD_TIMEOUT_MS` en `config.h`), los motores se detienen solos y se manda un log. Requisito no negociable — visible como `checkWatchdog()` en `movement.ino`, llamado en cada iteración de `loop()` del modo autónomo.
+
+Con `LEGACY_PROTOCOL = true` está desactivado: `nagevacion_legacy.py` manda `F` una sola vez y el watchdog detendría el robot a medio segundo de cada `F`. La razón y el trade-off están en `config.h`.
 
 ## Estado
 
 - [x] Estructura de módulos y convenciones definidas
-- [x] Watchdog implementado (`watchdogReset()`, 500 ms)
+- [x] Watchdog implementado (`checkWatchdog()`, 500 ms; desactivado con `LEGACY_PROTOCOL`)
 - [x] Que compile (Arduino Mega 2560, sin errores ni warnings con `-Wall`)
 - [ ] Migración a PlatformIO
 - [ ] Confirmar modelo de placa física

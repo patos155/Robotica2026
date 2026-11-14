@@ -4,7 +4,7 @@
 **Medio:** Serial (USB), 9600 baud. Todos los mensajes terminan en `\n`.
 **Formato:** JSON por línea, campo `"type"` obligatorio.
 
-Fuente de verdad para ambos lados: si cambia algo aquí, debe cambiar en el mismo PR tanto `firmware/motors/src/protocol.h` como el nodo `motors_bridge` de `robot_ws`.
+Fuente de verdad para ambos lados: si cambia algo aquí, debe cambiar en el mismo PR tanto `firmware/motors/movement/protocol.h` como el nodo `motors_bridge` de `robot_ws`.
 
 ## Catálogo de tipos
 
@@ -16,7 +16,7 @@ Fuente de verdad para ambos lados: si cambia algo aquí, debe cambiar en el mism
 | `sensor` | `ultrasonic` | Arduino → `robot_ws` | Lecturas de los 6 HC-SR04 |
 | `log` | — | Arduino → `robot_ws` | Mensajes de debug — no afectan lógica |
 
-> Los tipos `sensor`/`gas` y `sensor`/`humidity` que aparecían en el diseño original (cuando ambos sensores vivían en el mismo Arduino que los motores) se movieron a [`sensors-protocol.md`](./sensors-protocol.md) al separar en dos Arduinos. Confirmar que no quedó ninguna referencia residual en `firmware/motors/src/protocol.h`.
+> Los tipos `sensor`/`gas` y `sensor`/`humidity` que aparecían en el diseño original (cuando ambos sensores vivían en el mismo Arduino que los motores) se movieron a [`sensors-protocol.md`](./sensors-protocol.md) al separar en dos Arduinos. Confirmar que no quedó ninguna referencia residual en `firmware/motors/movement/protocol.h`.
 
 ## `robot_ws` → Arduino
 
@@ -52,8 +52,9 @@ Fuente de verdad para ambos lados: si cambia algo aquí, debe cambiar en el mism
 Mientras `motors_bridge` no exista, el robot lo controla `nagevacion_legacy.py` (raíz del repo), que habla texto plano. Para ese script, `firmware/motors/movement/config.h` tiene `LEGACY_PROTOCOL = true`. Cuando está activo:
 
 - **Comandos:** la línea exacta `F`, `L`, `R`, `U` o `S`, sin JSON. Se tolera `\r\n`. Un comando desconocido detiene los motores.
-- **Fin de maniobra:** `T` en vez de `{"type": "status", "value": "DONE"}`. Se manda una sola vez por maniobra, también cuando el giro lo disparan los ultrasónicos. Python se bloquea tras `L`/`R` hasta recibirlo.
+- **Fin de maniobra:** `T` en vez de `{"type": "status", "value": "DONE"}`. Se manda una sola vez por maniobra, también cuando el giro lo disparan los ultrasónicos o cuando se aborta (switch a manual o control perdido a media maniobra). Python se bloquea tras `L`/`R` hasta recibirlo.
 - **Logs:** texto plano de una línea con prefijo `LOG: `. Nunca empiezan con `{` (Python los tomaría como sensores) ni son exactamente `T`.
+- **Modo:** `MODE: AUTO` o `MODE: MANUAL` en vez de `{"type": "mode", ...}`, al cambiar el switch. Al entrar a autónomo el Arduino detiene los motores y descarta los comandos pendientes. Como Python no repite `F`, el robot queda detenido hasta que Python cambie de comando: hay que reiniciar Python después de cambiar de modo.
 - **Sensores:** no se envían, como legacy. A 9600 baud esa línea bloquea el loop entre 90 y 150 ms.
 - **Watchdog:** desactivado. Python manda `F` una sola vez, así que un watchdog de 500 ms detendría el robot a medio segundo de cada `F`. Trade-off aceptado: si Python se cae, el robot sigue con el último comando hasta que reaccionen los ultrasónicos frontales, se pase el switch a manual o se pierda el control remoto.
 
