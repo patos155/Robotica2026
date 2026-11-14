@@ -26,6 +26,9 @@ constexpr int PIN_RELAY_RIGHT_2 = 16;
 // Niveles para energizar o soltar un rele (no son direcciones)
 constexpr uint8_t RELAY_ON      = HIGH;
 constexpr uint8_t RELAY_OFF     = LOW;
+// Pausa tras conmutar reles con el PWM en 0, antes de dar potencia, para que el contacto asiente y no
+// corte con carga (perilla de calibracion). Excepcion documentada a "delay() solo en Maneuvers".
+constexpr unsigned long RELAY_SWITCH_MS = 15;
 
 // Sensores ultrasonicos
 // conexiones de triger y echo Izquierdo trasero 

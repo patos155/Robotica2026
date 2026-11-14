@@ -1,7 +1,8 @@
 // =============================================================
 // Nombre de la clase:          Motors
 // Descripcion:                 Control de motores
-// Restricciones importantes:   modulo que interactua con el puente H del robot
+// Restricciones importantes:   modulo que interactua con el puente H del robot. Los reles nunca se
+//                              conmutan con PWM aplicado (ver move())
 // =============================================================
 
 #pragma once
@@ -17,6 +18,6 @@ class Motors {
         int _currentLeftSpeed;
         int _currentRightSpeed;
 
-        // Metodo privado para interactuar con el puente H
-        void _setMotorsPins(int speed, int pinPWM, int pinRelay1, int pintRelay2);
+        // Si cambia el signo de la velocidad de un lado, corta su PWM y conmuta sus reles; devuelve si conmuto
+        bool _switchRelays(int speed, int currentSpeed, int pinPWM, int pinRelay1, int pinRelay2);
 };
