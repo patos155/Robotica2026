@@ -47,7 +47,7 @@ robot_rescate.ino
 - `delay()` solo permitido dentro de `Maneuvers`. Candidato a reemplazarse por `millis()` si superficies irregulares dan problemas de alineación.
 - Inicialización de hardware en `begin()` llamado desde `setup()` — nunca en constructores.
 - Dirección de motores vía `MOT_FORWARD`/`MOT_BACKWARD` de `config.h` — nunca `HIGH`/`LOW` hardcodeado.
-- Lecturas de ultrasonido inválidas devuelven `-1` — siempre filtrar antes de usar.
+- Lecturas de ultrasonido sin eco o fuera de rango devuelven `MAX_DISTANCE_CM` de `config.h` ("despejado"), como legacy: un HC-SR04 sin objeto cerca no devuelve eco dentro del timeout.
 - **Watchdog obligatorio:** función explícita `verificarWatchdog()` en `robot_rescate.ino`, llamada en cada `loop()`. Detiene motores si no llega comando nuevo en ~300–500ms.
 
 ## Logging

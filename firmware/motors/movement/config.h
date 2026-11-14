@@ -52,6 +52,8 @@ constexpr int PIN_RIGHT_REAR_ECHO       = 24;
 // Variables de distancia minima a paredes con ultrasonicos
 constexpr int LATERAL_DISTANCE      = 25;         // Distancia lateral
 constexpr int FRONT_DISTANCE        = 25;         // Distancia delantera
+// Distancia que se reporta sin eco (no hay objeto cerca) o fuera de rango: se lee como "despejado"
+constexpr long MAX_DISTANCE_CM      = 400;
 
 // Compatibilidad con nagevacion_legacy.py (raiz del repo, texto plano). Con true:
 //  - Comandos: la linea exacta "F", "L", "R", "U" o "S". Fin de maniobra: "T".

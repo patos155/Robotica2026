@@ -55,11 +55,11 @@ long UltrasonicArray::_readUltra(int trigPin, int echoPin) {
     digitalWrite(trigPin, LOW);
 
     long duration = pulseIn(echoPin, HIGH, pulseInDelay);
-    // Retornamos una distancia alta (200 cm) para indicar que el camino esta despejado
-    if (duration == 0 || duration > 2500) {
-        return -1; 
-    }
-    
+    // Sin objeto cerca el HC-SR04 no regresa eco dentro del timeout (pulseIn da 0): se reporta
+    // MAX_DISTANCE_CM ("despejado"), igual que legacy, que lo leia como una distancia grande
+    if (duration == 0) return MAX_DISTANCE_CM;
+
     // Convertir el tiempo en distancia (cm)
-    return duration / 59;
+    long distance = duration / 59;
+    return (distance > MAX_DISTANCE_CM) ? MAX_DISTANCE_CM : distance;
 }
