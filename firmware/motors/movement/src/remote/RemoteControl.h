@@ -11,6 +11,8 @@ class Remote {
     public:
         void begin();
         void update();
+        // Solo el canal del switch (ch4): ~20 ms contra >120 ms de los 6. Para consultar durante una maniobra
+        void updateModeChannel();
         bool isSignalLost() const;
         bool isAutonomousMode() const;
         float getChannelValue(int channel) const;

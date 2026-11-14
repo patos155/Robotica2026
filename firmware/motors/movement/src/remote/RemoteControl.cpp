@@ -16,6 +16,10 @@ void Remote::update() {
     }
 }
 
+void Remote::updateModeChannel() {
+    _readChannel(4);    // tambien actualiza el contador de control perdido
+}
+
 void Remote::_readChannel(int channel) {
     // Lee la duración del pulso (en microsegundos) en el pin especificado para el canal dado
     // 'rcPins' es un array que contiene los pines de entrada para cada canal

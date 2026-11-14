@@ -65,8 +65,8 @@ constexpr long MAX_DISTANCE_CM      = 400;
 constexpr unsigned long ULTRASONIC_GAP_MS = 5;
 
 // Tope de cada ciclo de alineacion con ultrasonicos en Maneuvers (perilla de calibracion).
-// Durante una maniobra ni el control remoto ni el watchdog se revisan: sin este tope, un sensor
-// fallando haria girar al robot para siempre.
+// Durante una maniobra el watchdog no se revisa (el switch y la senal del control si): sin este
+// tope, un sensor fallando haria girar al robot hasta que el operador intervenga.
 constexpr unsigned long ALIGN_TIMEOUT_MS = 5000;
 
 // Watchdog del modo autonomo (solo protocolo JSON): sin comando nuevo en este tiempo se detiene

@@ -24,7 +24,7 @@ void setup() {
     motors.begin();
     ultraSensors.begin();
     rc.begin();
-    maneu.begin(&motors,& ultraSensors, &commu);
+    maneu.begin(&motors, &ultraSensors, &commu, shouldAbortManeuver);
     dbg.begin(&commu, false); // deshabilitamos la depuracion del sistema por defecto
     commu.sendLog("Hardware listo");
 }
@@ -133,4 +133,11 @@ void checkWatchdog() {
     } else {
         fired = false;
     }
+}
+
+// Maneuvers la consulta en cada espera de una maniobra. Lee solo el canal del switch (~20 ms) y no
+// los 6 (>120 ms), para no alargar las esperas ni la alineacion.
+bool shouldAbortManeuver() {
+    rc.updateModeChannel();
+    return rc.isSignalLost() || !rc.isAutonomousMode();
 }

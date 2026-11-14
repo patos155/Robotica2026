@@ -1,7 +1,8 @@
 // =============================================================
 // Nombre de la clase:          Maneuvers
 // Descripcion:                 Movimiento en modo autonomo
-// Restricciones importantes:   Debe recibir referencias de Motors y UltrasonicArray
+// Restricciones importantes:   Debe recibir punteros de Motors, UltrasonicArray y Communication, y la
+//                              funcion de aborto (definida en movement.ino: Maneuvers no depende de Remote)
 // =============================================================
 
 #pragma once
@@ -12,11 +13,13 @@
 
 class Maneuvers {
     public:
-        void begin(Motors * motorsInstance, UltrasonicArray * sensorsInstance, Communication * comm);
+        // shouldAbort se consulta en cada espera y en cada vuelta de la alineacion; si devuelve true
+        // (switch a manual o control perdido) la maniobra se detiene en ese momento
+        void begin(Motors * motorsInstance, UltrasonicArray * sensorsInstance, Communication * comm, bool (*shouldAbort)());
         void turnLeft();
         void turnRight();
         void uTurn();
-        
+
         // Tiempos de las secuencias en ms, iguales a legacy.ino
         static constexpr int DELAY_STOP             = 1000;  // pausas de paro, iguales en las tres maniobras
         static constexpr int RIGHT_TURN_MS          = 1500;  // giro inicial
@@ -31,7 +34,9 @@ class Maneuvers {
         Motors* _motors;
         UltrasonicArray* _sensors;
         Communication* _comm;
+        bool (*_shouldAbort)();
 
-        void _align(bool useRightSide, int leftSpeed, int rightSpeed);
-        void _finish(int finalPauseMs);
+        void _turn(int leftSpeed, int rightSpeed, unsigned long turnMs, bool useRightSide, unsigned long finalPauseMs);
+        bool _wait(unsigned long ms);
+        bool _align(bool useRightSide, int leftSpeed, int rightSpeed);
 };
