@@ -90,6 +90,12 @@ void Communication::sendStatusDone() {
 
 void Communication::sendMode(String mode) {
     // Notifica a Python cuando cambian con el switch del control
+    if (LEGACY_PROTOCOL) {
+        // Texto plano: nunca empieza con "{" (Python la tomaria como sensores)
+        Serial.print(F("MODE: "));
+        Serial.println(mode);
+        return;
+    }
     Serial.print("{\"type\": \"mode\", \"value\": \"");
     Serial.print(mode);
     Serial.println("\"}");

@@ -14,3 +14,9 @@ namespace Status {
     const char* const Done      = "DONE";
     const char* const DoneLegacy = "T";     // fin de maniobra con LEGACY_PROTOCOL (nagevacion_legacy.py)
 }
+
+// Valores del mensaje de modo (refleja el switch del control remoto)
+namespace Mode {
+    const char* const Auto      = "AUTO";
+    const char* const Manual    = "MANUAL";
+}

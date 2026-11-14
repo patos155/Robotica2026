@@ -74,7 +74,8 @@ constexpr unsigned long CMD_TIMEOUT_MS = 500;
 
 // Compatibilidad con nagevacion_legacy.py (raiz del repo, texto plano). Con true:
 //  - Comandos: la linea exacta "F", "L", "R", "U" o "S". Fin de maniobra: "T".
-//  - Logs en texto plano de una linea, con prefijo (nunca empiezan con "{" ni son "T").
+//  - Logs y cambio de modo en texto plano de una linea, con prefijo "LOG: " / "MODE: " (nunca
+//    empiezan con "{" ni son "T").
 //  - No se mandan lecturas de sensores: a 9600 baud esa linea bloquea el loop 90-150 ms.
 //  - Watchdog por comando desactivado: Python manda "F" una sola vez y un watchdog de 500 ms
 //    detendria el robot a medio segundo de cada "F". Trade-off aceptado: si Python se cae, el

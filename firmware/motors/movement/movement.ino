@@ -13,7 +13,10 @@ Remote rc;
 Maneuvers maneu;
 Communication commu;
 Logger dbg;
-bool rcWasLost = false;
+
+// Estado segun el control remoto; se compara con el de la vuelta anterior para actuar solo en los cambios
+enum class RcState : uint8_t { Unknown, Lost, Manual, Autonomous };
+RcState lastRcState = RcState::Unknown;     // Unknown fuerza el aviso en la primera vuelta
 bool inEmergency = false;                   // "Alto Emergencia" se avisa una vez por entrada
 
 unsigned long lastCommandTime = 0;
@@ -35,18 +38,35 @@ void loop() {
     int leftTargetSpeed = 0;
     int rightTargetSpeed = 0;
 
+    RcState rcState = rc.isSignalLost()     ? RcState::Lost
+                    : rc.isAutonomousMode() ? RcState::Autonomous
+                    :                         RcState::Manual;
+    if (rcState != lastRcState) {
+        lastRcState = rcState;
+        if (rcState == RcState::Lost) {
+            commu.sendLog("Control remoto perdido, motores detenidos");
+        } else if (rcState == RcState::Autonomous) {
+            // Sin esto seguiria la ultima velocidad del modo manual y se ejecutarian comandos viejos
+            // acumulados en el buffer. Python no repite "F": el robot queda detenido hasta que
+            // Python cambie de comando.
+            motors.stop();
+            commu.flushInput();
+            inEmergency = false;
+            commu.sendMode(Mode::Auto);
+        } else {
+            commu.sendMode(Mode::Manual);
+        }
+    }
+
     // ----------------------------- CONTROL PERDIDO -----------------------------------
     // Sin señal del control el robot se detiene; no entra a modo autonomo
-    if (rc.isSignalLost()) {
+    if (rcState == RcState::Lost) {
         motors.stop();
-        if (!rcWasLost) commu.sendLog("Control remoto perdido, motores detenidos");
-        rcWasLost = true;
         return;
     }
-    rcWasLost = false;
 
     // ----------------------------- MODO AUTONOMO -----------------------------------
-    if (rc.isAutonomousMode()) {
+    if (rcState == RcState::Autonomous) {
         if (!LEGACY_PROTOCOL) checkWatchdog();  // por que no en legacy: ver LEGACY_PROTOCOL en config.h
         ultraSensors.update();
         dbg.printChannels(rc);
