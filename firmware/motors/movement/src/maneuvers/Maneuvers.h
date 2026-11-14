@@ -17,15 +17,21 @@ class Maneuvers {
         void turnRight();
         void uTurn();
         
-        // tiempo de los delays para las secuencias
-        static constexpr int DELAY_STOP = 1000;
-        static constexpr int DELAY_TURN = 1500;
-        static constexpr int DELAY_FORWARD = 1500;
-        static constexpr int DELAY_U_TURN = 4000;
+        // Tiempos de las secuencias en ms, iguales a legacy.ino
+        static constexpr int DELAY_STOP             = 1000;  // pausas de paro, iguales en las tres maniobras
+        static constexpr int RIGHT_TURN_MS          = 1500;  // giro inicial
+        static constexpr int RIGHT_FINAL_PAUSE_MS   = 1500;
+        static constexpr int LEFT_TURN_MS           = 1000;
+        static constexpr int LEFT_FINAL_PAUSE_MS    = 1000;
+        static constexpr int U_TURN_MS              = 4000;
+        static constexpr int U_FINAL_PAUSE_MS       = 1000;
 
     private:
         // Crea punteros para las clases
         Motors* _motors;
         UltrasonicArray* _sensors;
         Communication* _comm;
+
+        void _align(bool useRightSide, int leftSpeed, int rightSpeed);
+        void _finish(int finalPauseMs);
 };

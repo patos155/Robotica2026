@@ -55,6 +55,11 @@ constexpr int FRONT_DISTANCE        = 25;         // Distancia delantera
 // Distancia que se reporta sin eco (no hay objeto cerca) o fuera de rango: se lee como "despejado"
 constexpr long MAX_DISTANCE_CM      = 400;
 
+// Tope de cada ciclo de alineacion con ultrasonicos en Maneuvers (perilla de calibracion).
+// Durante una maniobra ni el control remoto ni el watchdog se revisan: sin este tope, un sensor
+// fallando haria girar al robot para siempre.
+constexpr unsigned long ALIGN_TIMEOUT_MS = 5000;
+
 // Compatibilidad con nagevacion_legacy.py (raiz del repo, texto plano). Con true:
 //  - Comandos: la linea exacta "F", "L", "R", "U" o "S". Fin de maniobra: "T".
 //  - Logs en texto plano de una linea, con prefijo (nunca empiezan con "{" ni son "T").

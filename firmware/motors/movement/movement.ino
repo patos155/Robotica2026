@@ -50,7 +50,8 @@ void loop() {
         ultraSensors.update();
         dbg.printChannels(rc);
         commu.sendSensorData(&ultraSensors);
-        if (ultraSensors.isFLL() == 1 && ultraSensors.isFRL() == 1) {
+        // Como legacy: basta un sensor frontal libre para seguir escuchando a Python
+        if (ultraSensors.isFLL() == 1 || ultraSensors.isFRL() == 1) {
             String mensaje = commu.receiveCommand();
             
             // Si el comando no está vacio, actualizamos el watchdog
@@ -73,19 +74,18 @@ void loop() {
                 motors.stop();
             }
         } else {
+            // Ambos sensores frontales bloqueados
             lastCommandTime = millis();
-            if (ultraSensors.isFLL() == 0 && ultraSensors.isFRL() == 0) {
-                if (ultraSensors.isLFL() == 1 && ultraSensors.isRFL() == 0){
-                    commu.sendLog("Giro izquierdo (con ultrasonicos)");
-                    maneu.turnLeft();
-                } else if (ultraSensors.isLFL() == 0 && ultraSensors.isRFL() == 1) {
-                    commu.sendLog("Giro derecho (con ultrasonicos)");
-                    maneu.turnRight();
-                } else {
-                    motors.stop();
-                    commu.sendLog("----------------- Alto Emergencia --------------");
-                }
-            } 
+            if (ultraSensors.isLFL() == 1 && ultraSensors.isRFL() == 0){
+                commu.sendLog("Giro izquierdo (con ultrasonicos)");
+                maneu.turnLeft();
+            } else if (ultraSensors.isLFL() == 0 && ultraSensors.isRFL() == 1) {
+                commu.sendLog("Giro derecho (con ultrasonicos)");
+                maneu.turnRight();
+            } else {
+                motors.stop();
+                commu.sendLog("----------------- Alto Emergencia --------------");
+            }
         }
     } else {
         // ----------------------------- MODO MANUAL -----------------------------------
