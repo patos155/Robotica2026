@@ -48,7 +48,7 @@ void Logger::printChannels(Remote& rc) {
 #ifdef DEBUG_MODE
     if (!_enabled) return;
     _comm->sendLog(F("--- Canales CR ---"));
-    for (int iChannel = 1; iChannel <= 6; iChannel++) {
+    for (int iChannel = 0; iChannel < 6; iChannel++) {
         float value = rc.getChannelValue(iChannel);
         String message = "Ch #" + String(iChannel) + ": " + String(value);
         _comm->sendLog(message);
