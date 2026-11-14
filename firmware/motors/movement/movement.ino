@@ -33,10 +33,9 @@ void loop() {
     int leftTargetSpeed = 0;
     int rightTargetSpeed = 0;
 
-    watchdogReset();
-
     // ----------------------------- MODO AUTONOMO -----------------------------------
     if (rc.isAutonomousMode()) {
+        watchdogReset();
         ultraSensors.update();
         dbg.printChannels(rc);
         commu.sendSensorData(&ultraSensors);
@@ -91,7 +90,7 @@ void loop() {
         } else if (ch1 >= 0.65f) {
             leftTargetSpeed = map(ch1 * 100, 65, 100, 0, 255);
         } else if (ch1 <= 0.35f) {
-            leftTargetSpeed = -map(ch1 * 100, 65, 100, 0, 255);
+            leftTargetSpeed = -map(ch1 * 100, 35, 0, 0, 255);
         }
 
         if (ch2 > 0.35f && ch2 < 0.65f) {
@@ -99,15 +98,20 @@ void loop() {
         } else if (ch2 >= 0.65f) {
             rightTargetSpeed = map(ch2 * 100, 65, 100, 0, 255);
         } else if (ch2 <= 0.35f) {
-            rightTargetSpeed = -map(ch2 * 100, 65, 100, 0, 255);
+            rightTargetSpeed = -map(ch2 * 100, 35, 0, 0, 255);
         }
         motors.move(leftTargetSpeed, rightTargetSpeed);
     }
 }
 
+// Solo aplica en modo autonomo; el log se manda una vez por disparo para no saturar el Serial
 void watchdogReset() {
+    static bool fired = false;
     if (millis() - lastCommandTime > timeOut) {
         motors.stop();
-        commu.sendLog("Watchdog: No se recibieron comandos, deteniendo motores");
+        if (!fired) commu.sendLog("Watchdog: No se recibieron comandos, deteniendo motores");
+        fired = true;
+    } else {
+        fired = false;
     }
 }
