@@ -47,12 +47,15 @@ void loop() {
             commu.sendLog("Control remoto perdido, motores detenidos");
         } else if (rcState == RcState::Autonomous) {
             // Sin esto seguiria la ultima velocidad del modo manual y se ejecutarian comandos viejos
-            // acumulados en el buffer. Python no repite "F": el robot queda detenido hasta que
-            // Python cambie de comando.
+            // acumulados en el buffer
             motors.stop();
             commu.flushInput();
             inEmergency = false;
             commu.sendMode(Mode::Auto);
+            // El flush descarta el unico "F" de Python (no lo repite) o un L/R por el que quedo
+            // esperando "T". La "T" lo desbloquea y le borra el ultimo comando: reenvia su decision
+            // actual en el siguiente escaneo del LiDAR
+            if (LEGACY_PROTOCOL) commu.sendStatusDone();
         } else {
             commu.sendMode(Mode::Manual);
         }

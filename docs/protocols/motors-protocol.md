@@ -54,7 +54,7 @@ Mientras `motors_bridge` no exista, el robot lo controla `nagevacion_legacy.py` 
 - **Comandos:** la línea exacta `F`, `L`, `R`, `U` o `S`, sin JSON. Se tolera `\r\n`. Un comando desconocido detiene los motores.
 - **Fin de maniobra:** `T` en vez de `{"type": "status", "value": "DONE"}`. Se manda una sola vez por maniobra, también cuando el giro lo disparan los ultrasónicos o cuando se aborta (switch a manual o control perdido a media maniobra). Python se bloquea tras `L`/`R` hasta recibirlo.
 - **Logs:** texto plano de una línea con prefijo `LOG: `. Nunca empiezan con `{` (Python los tomaría como sensores) ni son exactamente `T`.
-- **Modo:** `MODE: AUTO` o `MODE: MANUAL` en vez de `{"type": "mode", ...}`, al cambiar el switch. Al entrar a autónomo el Arduino detiene los motores y descarta los comandos pendientes. Como Python no repite `F`, el robot queda detenido hasta que Python cambie de comando: hay que reiniciar Python después de cambiar de modo.
+- **Modo:** `MODE: AUTO` o `MODE: MANUAL` en vez de `{"type": "mode", ...}`, al cambiar el switch. Al entrar a autónomo el Arduino detiene los motores, descarta los comandos pendientes y manda `T`. Python no repite `F` y tras `L`/`R` espera `T`; esa `T` lo desbloquea y borra su último comando, así que reenvía su decisión actual en el siguiente escaneo, sin reiniciarlo.
 - **Sensores:** no se envían, como legacy. A 9600 baud esa línea bloquea el loop entre 90 y 150 ms.
 - **Watchdog:** desactivado. Python manda `F` una sola vez, así que un watchdog de 500 ms detendría el robot a medio segundo de cada `F`. Trade-off aceptado: si Python se cae, el robot sigue con el último comando hasta que reaccionen los ultrasónicos frontales, se pase el switch a manual o se pierda el control remoto.
 
