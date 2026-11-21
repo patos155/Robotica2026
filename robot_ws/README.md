@@ -139,9 +139,16 @@ ros2 run robot_vision camera_raw_publisher --ros-args \
   -p camera_device:=/dev/v4l/by-id/<ruta>
 ```
 
-El formato y la resolución son constantes del archivo (`CAMERA_*`) pensadas
-para la capturadora; con otra cámara que no los ofrezca, V4L2 elige el más
-cercano.
+La resolución se elige al arrancar con los parámetros `camera_width` y
+`camera_height` (default 480x320); el formato y los fps son constantes del
+archivo (`CAMERA_*`) pensadas para la capturadora. Si la cámara no ofrece lo
+pedido, V4L2 elige lo más cercano y el log de arranque muestra lo pedido y lo
+aceptado:
+
+```bash
+ros2 run robot_vision camera_raw_publisher --ros-args \
+  -p camera_width:=720 -p camera_height:=480
+```
 
 ### Ajustar el bitrate del video en vivo
 

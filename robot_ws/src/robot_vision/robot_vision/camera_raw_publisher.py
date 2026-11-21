@@ -13,9 +13,11 @@ DEFAULT_CAMERA_DEVICE = '/dev/v4l/by-id/usb-MACROSILICON_AV_TO_USB2.0_20150130-v
 
 # Formato de la capturadora (ver `v4l2-ctl -d <dev> --list-formats-ext`). Si la
 # camara no lo ofrece, V4L2 elige el mas cercano y el log de arranque lo dice.
+# La resolucion se puede cambiar al arrancar:
+#   --ros-args -p camera_width:=720 -p camera_height:=480
 CAMERA_FOURCC = 'MJPG'
-CAMERA_WIDTH = 480
-CAMERA_HEIGHT = 320
+DEFAULT_CAMERA_WIDTH = 480
+DEFAULT_CAMERA_HEIGHT = 320
 CAMERA_FPS = 25
 # Un solo buffer: si el consumidor se atrasa se pierde un frame en vez de
 # acumular latencia con frames viejos.
@@ -30,15 +32,22 @@ class CameraRawPublisher(Node):
     def __init__(self):
         super().__init__('camera_raw_publisher')
 
+        # Se leen solo al arrancar: cambiarlos en caliente no reabre la camara.
         self.declare_parameter('camera_device', DEFAULT_CAMERA_DEVICE)
-        self.cap = self._open_camera(self.get_parameter('camera_device').value)
+        self.declare_parameter('camera_width', DEFAULT_CAMERA_WIDTH)
+        self.declare_parameter('camera_height', DEFAULT_CAMERA_HEIGHT)
+        self.cap = self._open_camera(
+            self.get_parameter('camera_device').value,
+            self.get_parameter('camera_width').value,
+            self.get_parameter('camera_height').value,
+        )
 
         self.bridge = CvBridge()
         self.publisher_ = self.create_publisher(Image, '/camera/image_raw', CAMERA_QOS)
         self.timer = self.create_timer(1.0 / FRAME_RATE_HZ, self.publish_frame)
         self.get_logger().info('camera_raw_publisher iniciado')
 
-    def _open_camera(self, device):
+    def _open_camera(self, device, width, height):
         # CAP_V4L2 explicito: sin el, OpenCV puede caer al backend FFMPEG, donde
         # el formato, los fps y el buffer no se pueden fijar.
         cap = cv2.VideoCapture(device, cv2.CAP_V4L2)
@@ -48,17 +57,19 @@ class CameraRawPublisher(Node):
 
         # En V4L2 el orden importa: primero el formato, luego resolucion y fps.
         cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*CAMERA_FOURCC))
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH, CAMERA_WIDTH)
-        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, CAMERA_HEIGHT)
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
         cap.set(cv2.CAP_PROP_FPS, CAMERA_FPS)
         cap.set(cv2.CAP_PROP_BUFFERSIZE, CAMERA_BUFFER_FRAMES)
 
         # Lo que la camara realmente acepto, no lo que se pidio.
         fourcc = int(cap.get(cv2.CAP_PROP_FOURCC)).to_bytes(4, 'little').decode(errors='replace')
-        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        actual_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        actual_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         fps = cap.get(cv2.CAP_PROP_FPS)
-        self.get_logger().info(f'camara abierta: {device} -> {width}x{height} {fourcc} @ {fps:.0f} fps')
+        self.get_logger().info(
+            f'camara abierta: {device} -> pedido {width}x{height}, '
+            f'aceptado {actual_width}x{actual_height} {fourcc} @ {fps:.0f} fps')
         return cap
 
     def publish_frame(self):
