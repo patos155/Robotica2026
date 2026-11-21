@@ -16,25 +16,34 @@ const videoRevision = ref(0)
 const {
   connectionState,
   feedback,
-  qrResult,
+  testResult,
   lastError,
   isTestRunning,
   isConnected,
   events,
   connect,
   disconnect,
-  startQrTest,
-  cancelQrTest,
+  startTest,
+  cancelTest,
 } = useRosbridge()
+
+const resultDialog = ref(null)
 
 const socketUrl = computed(() => `ws://${host.value.trim()}:${rosbridgePort.value}`)
 const videoUrl = computed(() => {
+  // ros_compressed reenvia el JPEG de image_compressor tal cual (sin
+  // recomprimir, sin plugin de image_transport); width/quality no aplican.
+  // sensor_data = BEST_EFFORT, igual que CAMERA_QOS; con el default (RELIABLE)
+  // el subscriber nunca recibe frames.
   const query = new URLSearchParams({
     topic: videoTopic.value,
     type: 'ros_compressed',
     qos_profile: 'sensor_data',
     client_id: `dashboard-${videoRevision.value}`,
   })
+  // web_video_server (Humble) no decodifica %2F en el nombre del topic y lo
+  // rechaza como invalido; un "/" literal es valido en un query string.
+  return `http://${host.value.trim()}:${videoPort.value}/stream?${query.toString().replaceAll('%2F', '/')}`
 })
 
 const statusLabel = computed(() => ({
@@ -71,6 +80,11 @@ watch(videoUrl, () => {
   videoReady.value = false
   videoFailed.value = false
 })
+
+// flush 'post': el contenido del <dialog> (v-if) ya esta renderizado al abrirlo.
+watch(testResult, (result) => {
+  if (result && !resultDialog.value.open) resultDialog.value.showModal()
+}, { flush: 'post' })
 
 onMounted(applyConnection)
 </script>
@@ -141,7 +155,7 @@ onMounted(applyConnection)
             <span class="qr-icon" aria-hidden="true">⌗</span>
           </div>
 
-          <div class="test-status" :class="{ scanning: isTestRunning, success: qrResult }">
+          <div class="test-status" :class="{ scanning: isTestRunning, success: testResult?.found }">
             <span class="test-indicator" aria-hidden="true"></span>
             <div>
               <small>ESTADO</small>
@@ -149,17 +163,12 @@ onMounted(applyConnection)
             </div>
           </div>
 
-          <div v-if="qrResult" class="qr-result" aria-live="polite">
-            <small>CONTENIDO DETECTADO</small>
-            <strong>{{ qrResult }}</strong>
-          </div>
-
           <div class="button-row">
             <button
               class="primary-button"
               type="button"
               :disabled="!isConnected || isTestRunning"
-              @click="startQrTest"
+              @click="startTest('qr')"
             >
               {{ isTestRunning ? 'Escaneando…' : 'Iniciar lectura QR' }}
             </button>
@@ -167,7 +176,7 @@ onMounted(applyConnection)
               v-if="isTestRunning"
               class="secondary-button danger"
               type="button"
-              @click="cancelQrTest"
+              @click="cancelTest"
             >
               Cancelar
             </button>
@@ -225,5 +234,24 @@ onMounted(applyConnection)
       </ul>
       <p v-else class="empty-state">Los eventos de conexión y lectura aparecerán aquí.</p>
     </section>
+
+    <dialog ref="resultDialog" class="result-modal" aria-labelledby="result-title">
+      <template v-if="testResult">
+        <div class="panel-heading compact">
+          <div>
+            <p class="section-label">RESULTADO</p>
+            <h2 id="result-title">{{ testResult.label }}</h2>
+          </div>
+        </div>
+        <img v-if="testResult.image" :src="testResult.image" alt="Captura anotada de la prueba" />
+        <div class="result-text" :class="{ empty: !testResult.found }" role="status">
+          <small>{{ testResult.found ? 'CONTENIDO DETECTADO' : 'SIN RESULTADO' }}</small>
+          <strong>{{ testResult.text }}</strong>
+        </div>
+        <form method="dialog" class="button-row">
+          <button class="primary-button" autofocus>Cerrar</button>
+        </form>
+      </template>
+    </dialog>
   </main>
 </template>

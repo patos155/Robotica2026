@@ -4,10 +4,16 @@ const ACTION_NAME = '/run_test'
 const ACTION_TYPE = 'robot_interfaces/action/RunTest'
 const MAX_RECONNECT_DELAY_MS = 8000
 
+// Pruebas de /run_test. `empty` = texto a mostrar cuando el robot termina bien
+// pero result_text viene vacio. Agregar hazmat/voz aqui con el mismo patron.
+const TESTS = {
+  qr: { label: 'Lectura QR', empty: 'No se encontró ningún código QR' },
+}
+
 export function useRosbridge() {
   const connectionState = ref('disconnected')
   const feedback = ref('Esperando una prueba')
-  const qrResult = ref('')
+  const testResult = ref(null) // { label, found, text, image } de la ultima prueba
   const lastError = ref('')
   const isTestRunning = ref(false)
   const events = ref([])
@@ -15,6 +21,7 @@ export function useRosbridge() {
   let socket = null
   let socketUrl = ''
   let activeGoalId = ''
+  let activeTestId = ''
   let reconnectTimer = null
   let reconnectDelayMs = 1000
   let shouldReconnect = true
@@ -64,15 +71,24 @@ export function useRosbridge() {
     if (message.op === 'action_result' && message.id === activeGoalId) {
       isTestRunning.value = false
       const result = message.values || {}
+      const test = TESTS[activeTestId]
 
       if (message.result && result.success) {
-        qrResult.value = result.result_text || 'QR detectado sin texto'
-        feedback.value = 'Lectura terminada'
-        addEvent(`QR detectado: ${qrResult.value}`, 'success')
+        // rosbridge serializa uint8[] (CompressedImage.data) como base64.
+        const image = result.result_images?.[0]
+        const found = Boolean(result.result_text)
+        testResult.value = {
+          label: test.label,
+          found,
+          text: result.result_text || test.empty,
+          image: image?.data ? `data:image/${image.format || 'jpeg'};base64,${image.data}` : '',
+        }
+        feedback.value = found ? 'Prueba terminada' : test.empty
+        addEvent(`${test.label}: ${testResult.value.text}`, found ? 'success' : 'warning')
       } else {
         const reason = result.message || 'La prueba no terminó correctamente'
         feedback.value = reason
-        addEvent(`Prueba QR: ${reason}`, 'warning')
+        addEvent(`${test.label}: ${reason}`, 'warning')
       }
       activeGoalId = ''
       return
@@ -148,26 +164,27 @@ export function useRosbridge() {
     addEvent('Conexión cerrada por el operador.')
   }
 
-  function startQrTest() {
-    const goalId = globalThis.crypto?.randomUUID?.() || `qr-${Date.now()}`
+  function startTest(testId) {
+    const goalId = globalThis.crypto?.randomUUID?.() || `${testId}-${Date.now()}`
     const sent = send({
       op: 'send_action_goal',
       id: goalId,
       action: ACTION_NAME,
       action_type: ACTION_TYPE,
-      args: { test_id: 'qr', timeout_s: 0 },
+      args: { test_id: testId, timeout_s: 0 },
       feedback: true,
     })
     if (!sent) return
 
     activeGoalId = goalId
+    activeTestId = testId
     isTestRunning.value = true
-    qrResult.value = ''
-    feedback.value = 'Buscando código QR…'
-    addEvent('Prueba QR iniciada.')
+    testResult.value = null
+    feedback.value = `Ejecutando ${TESTS[testId].label}…`
+    addEvent(`${TESTS[testId].label} iniciada.`)
   }
 
-  function cancelQrTest() {
+  function cancelTest() {
     if (!activeGoalId) return
     if (send({ op: 'cancel_action_goal', id: activeGoalId, action: ACTION_NAME })) {
       feedback.value = 'Cancelando prueba…'
@@ -180,14 +197,14 @@ export function useRosbridge() {
   return {
     connectionState,
     feedback,
-    qrResult,
+    testResult,
     lastError,
     isTestRunning,
     isConnected,
     events,
     connect,
     disconnect,
-    startQrTest,
-    cancelQrTest,
+    startTest,
+    cancelTest,
   }
 }

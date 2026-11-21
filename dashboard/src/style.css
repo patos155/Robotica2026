@@ -72,13 +72,17 @@ code { color: #a9c5b9; font: 400 0.7rem 'DM Mono', monospace; overflow-wrap: any
 
 .qr-icon { display: grid; place-items: center; width: 36px; height: 36px; color: var(--green); border: 1px solid rgba(66, 245, 158, 0.2); border-radius: 8px; background: rgba(66, 245, 158, 0.07); font-size: 1.45rem; }
 .test-status { display: flex; gap: 13px; align-items: center; margin: 18px; padding: 14px; background: rgba(4, 13, 10, 0.52); border: 1px solid var(--line); border-radius: 10px; }
-.test-status small, .qr-result small { display: block; margin-bottom: 4px; color: var(--muted); font: 500 0.62rem 'DM Mono'; letter-spacing: .11em; }
+.test-status small, .result-text small { display: block; margin-bottom: 4px; color: var(--muted); font: 500 0.62rem 'DM Mono'; letter-spacing: .11em; }
 .test-status p { margin: 0; color: #c7d9d1; font-size: .84rem; }
 .test-indicator { width: 11px; height: 11px; flex: 0 0 auto; border: 2px solid var(--muted); border-radius: 50%; }
 .test-status.scanning .test-indicator { border-color: var(--amber); border-top-color: transparent; animation: rotate .8s linear infinite; }
 .test-status.success .test-indicator { border-color: var(--green); background: var(--green); box-shadow: 0 0 10px rgba(66, 245, 158, .5); }
-.qr-result { margin: -4px 18px 18px; padding: 14px; border-left: 3px solid var(--green); background: rgba(66, 245, 158, 0.07); border-radius: 5px; }
-.qr-result strong { display: block; color: #eafff5; overflow-wrap: anywhere; }
+.result-modal { width: min(720px, calc(100% - 24px)); max-height: calc(100vh - 24px); padding: 0; overflow: auto; color: inherit; background: #0b1a15; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6); }
+.result-modal::backdrop { background: rgba(2, 7, 5, 0.78); backdrop-filter: blur(4px); }
+.result-modal > img { display: block; width: 100%; background: #020705; }
+.result-text { margin: 18px; padding: 14px; border-left: 3px solid var(--green); background: rgba(66, 245, 158, 0.07); border-radius: 5px; }
+.result-text.empty { border-left-color: var(--amber); background: rgba(255, 186, 82, 0.07); }
+.result-text strong { display: block; color: #eafff5; overflow-wrap: anywhere; }
 .button-row { display: flex; gap: 10px; align-items: center; padding: 0 18px 18px; }
 .primary-button, .secondary-button { min-height: 42px; padding: 0 16px; border-radius: 8px; font-weight: 800; font-size: .8rem; transition: transform .15s, border-color .15s, background .15s; }
 .primary-button { flex: 1; color: #04100b; background: var(--green); border: 1px solid var(--green); }

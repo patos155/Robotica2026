@@ -125,6 +125,24 @@ Los `test_id` disponibles son las llaves de `TEST_HANDLERS` en
 `test_runner.py` — pedir uno que no existe regresa `ABORTED` con un mensaje
 de error, no una excepción.
 
+### Elegir la cámara
+
+`camera_raw_publisher` abre la cámara por su ruta estable de
+`/dev/v4l/by-id/` (parámetro `camera_device`) y no por un índice
+`/dev/videoN`, porque ese número cambia si se reordena el USB. El default es
+la capturadora `AV TO USB2.0`, abierta con V4L2 en MJPG, 480x320 a 25 fps y un
+solo buffer. Al arrancar, el log dice lo que la cámara realmente aceptó. Para
+usar otra cámara (`ls -l /dev/v4l/by-id/` lista las disponibles):
+
+```bash
+ros2 run robot_vision camera_raw_publisher --ros-args \
+  -p camera_device:=/dev/v4l/by-id/<ruta>
+```
+
+El formato y la resolución son constantes del archivo (`CAMERA_*`) pensadas
+para la capturadora; con otra cámara que no los ofrezca, V4L2 elige el más
+cercano.
+
 ### Ajustar el bitrate del video en vivo
 
 `image_compressor` limita cuántos bytes por segundo salen hacia el

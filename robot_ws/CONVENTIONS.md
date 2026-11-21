@@ -19,7 +19,7 @@ Comentarios y documentación en español — regla transversal del repo.
 | Clases (nodos, tipos de interfaz) | `PascalCase` | `CameraRawPublisher`, `RunTest` |
 | Archivos de interfaz (`.action`/`.srv`/`.msg`) | `PascalCase`, un archivo = un tipo | `RunTest.action` |
 | Funciones de detección puras | `detect_<algo>` | `detect_qr` |
-| Constantes | `UPPER_SNAKE_CASE`, sin números mágicos sueltos | `JPEG_QUALITY`, `CAMERA_INDEX` |
+| Constantes | `UPPER_SNAKE_CASE`, sin números mágicos sueltos | `JPEG_QUALITY`, `CAMERA_WIDTH` |
 
 ## Tipos de paquete: ¿`ament_python` o `ament_cmake`?
 
@@ -101,7 +101,9 @@ nueva por cada prueba. Pasos:
      `_handle_qr` en `test_runner.py` como referencia.
    - Prueba de **duración variable** (como movimiento/voz): hace su propio
      loop dentro del handler, publica `goal_handle.publish_feedback(...)`
-     periódicamente, revisa `goal_handle.is_cancel_requested` en cada
+     periódicamente (solo con `status`, sin imágenes: el feedback viaja por
+     rosbridge, que debe quedar libre para comandos, y el video ya está en
+     vivo; la imagen anotada va una sola vez en el resultado), revisa `goal_handle.is_cancel_requested` en cada
      vuelta, y aplica un timeout (30s si el cliente no manda uno distinto
      en `timeout_s`). Ver `_handle_motion` en `test_runner.py` como
      referencia — incluye el patrón de correr algo con estado propio

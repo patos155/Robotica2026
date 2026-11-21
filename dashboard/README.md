@@ -1,7 +1,8 @@
 # Dashboard
 
 Interfaz Vue 3 para visualizar `/camera/image_raw` y ejecutar la acción
-ROS 2 `/run_test` con pruebas bajo demanda (por ahora, `qr`).
+ROS 2 `/run_test` con pruebas bajo demanda (por ahora, `qr`). Al terminar una
+prueba se abre un modal con el texto y la imagen anotada (`result_images[0]`).
 
 ## Enlaces utilizados
 

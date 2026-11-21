@@ -56,7 +56,10 @@ def _handle_qr(node, goal_handle):
 
 def _handle_motion(node, goal_handle):
     # Prueba de duracion: corre hasta que la cancelen o se agote el timeout,
-    # mandando feedback periodico con el frame anotado. El subtractor se crea
+    # mandando feedback periodico solo con el estado (sin imagen: el operador
+    # ya ve el video en vivo, y un JPEG por feedback son ~2 Mbps por rosbridge,
+    # el canal que debe quedar libre para comandos como un STOP; la imagen
+    # anotada viaja una sola vez, en el resultado). El subtractor se crea
     # nuevo en cada prueba (mas simple, sin costo en reposo) a cambio de que
     # los primeros MOTION_WARMUP_FRAMES no cuenten para el resultado mientras
     # aprende el fondo -- si no, casi toda prueba arrancaria con un falso
@@ -90,12 +93,9 @@ def _handle_motion(node, goal_handle):
             if frames_seen > MOTION_WARMUP_FRAMES and motion_found:
                 motion_ever_detected = True
 
-            feedback_img = _encode_jpeg(annotated)
-            if feedback_img is not None:
-                feedback = RunTest.Feedback()
-                feedback.status = 'movimiento detectado' if motion_found else 'sin movimiento'
-                feedback.preview_image = feedback_img
-                goal_handle.publish_feedback(feedback)
+            feedback = RunTest.Feedback()
+            feedback.status = 'movimiento detectado' if motion_found else 'sin movimiento'
+            goal_handle.publish_feedback(feedback)
 
         time.sleep(MOTION_FEEDBACK_INTERVAL_S)
 
