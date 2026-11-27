@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-rosbridge-suite \
     ros-humble-web-video-server \
     ros-humble-launch-xml \
+    python3-serial \
     libzbar0 \
     git \
     ros-humble-foxglove-bridge \
