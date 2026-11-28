@@ -20,9 +20,10 @@ RcState lastRcState = RcState::Unknown;     // Unknown fuerza el aviso en la pri
 bool inEmergency = false;                   // "Alto Emergencia" se avisa una vez por entrada
 
 unsigned long lastCommandTime = 0;
+unsigned long lastSensorTelemetry = 0;
 
 void setup() {
-    commu.begin(9600);
+    commu.begin(SERIAL_BAUD_RATE);
     commu.sendLog("Iniciando hardware");
     motors.begin();
     ultraSensors.begin();
@@ -52,9 +53,8 @@ void loop() {
             commu.flushInput();
             inEmergency = false;
             commu.sendMode(Mode::Auto);
-            // El flush descarta el unico "F" de Python (no lo repite) o un L/R por el que quedo
-            // esperando "T". La "T" lo desbloquea y le borra el ultimo comando: reenvia su decision
-            // actual en el siguiente escaneo del LiDAR
+            // El flush descarta comandos viejos acumulados en modo manual. Con el protocolo
+            // JSON el watchdog se rearma al llegar el primer comando de serial_bridge.
             if (LEGACY_PROTOCOL) commu.sendStatusDone();
         } else {
             commu.sendMode(Mode::Manual);
@@ -73,10 +73,13 @@ void loop() {
         if (!LEGACY_PROTOCOL) checkWatchdog();  // por que no en legacy: ver LEGACY_PROTOCOL en config.h
         ultraSensors.update();
         dbg.printChannels(rc);
-        commu.sendSensorData(&ultraSensors);
+        if (millis() - lastSensorTelemetry >= SENSOR_TELEMETRY_MS) {
+            lastSensorTelemetry = millis();
+            commu.sendSensorData(&ultraSensors);
+        }
         bool wasEmergency = inEmergency;
         inEmergency = false;
-        // Como legacy: basta un sensor frontal libre para seguir escuchando a Python
+        // Basta un sensor frontal libre para seguir escuchando comandos del puente serial
         if (ultraSensors.isFLL() || ultraSensors.isFRL()) {
             char cmd = commu.receiveCommand();
 

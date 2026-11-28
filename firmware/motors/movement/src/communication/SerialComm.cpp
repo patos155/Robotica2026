@@ -64,7 +64,7 @@ void Communication::sendSensorData(UltrasonicArray * sensors) {
     // Legacy no manda sensores: a 9600 baud esta linea bloquea el loop 90-150 ms
     if (LEGACY_PROTOCOL) return;
 
-    // Le envia a Python las mediciones de los sensores ultrasonicos
+    // Le envia al puente serial de robot_ws las mediciones de los ultrasonicos
     Serial.print("{\"type\": \"sensor\", \"sensor\": \"ultrasonic\", \"data\": {");
 
     Serial.print("\"distFL\": "); Serial.print(sensors->getFLM()); Serial.print(", ");

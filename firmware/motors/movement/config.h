@@ -8,6 +8,9 @@
 #include <Arduino.h>
 //#define DEBUG_MODE 
 
+constexpr long SERIAL_BAUD_RATE             = 9600;
+constexpr unsigned long SENSOR_TELEMETRY_MS = 200;
+
 constexpr int PINS_RC[6]        = {25,29,27,31,33,35};
 constexpr unsigned long PULSE_IN_TIMEOUT_US = 30000;      // tope de pulseIn() en RC y ultrasonicos
 // Lecturas seguidas sin pulso en el canal del switch (ch4) para dar el control por perdido.
@@ -72,17 +75,13 @@ constexpr unsigned long ALIGN_TIMEOUT_MS = 5000;
 // Watchdog del modo autonomo (solo protocolo JSON): sin comando nuevo en este tiempo se detiene
 constexpr unsigned long CMD_TIMEOUT_MS = 500;
 
-// Compatibilidad con nagevacion_legacy.py (raiz del repo, texto plano). Con true:
-//  - Comandos: la linea exacta "F", "L", "R", "U" o "S". Fin de maniobra: "T".
-//  - Logs y cambio de modo en texto plano de una linea, con prefijo "LOG: " / "MODE: " (nunca
-//    empiezan con "{" ni son "T").
-//  - No se mandan lecturas de sensores: a 9600 baud esa linea bloquea el loop 90-150 ms.
-//  - Watchdog por comando desactivado: Python manda "F" una sola vez y un watchdog de 500 ms
-//    detendria el robot a medio segundo de cada "F". Trade-off aceptado: si Python se cae, el
-//    robot sigue con el ultimo comando hasta que reaccionen los ultrasonicos frontales, se pase
-//    el switch a manual o se pierda el control remoto.
-// Con false: protocolo JSON de docs/protocols/motors-protocol.md (motors_bridge, aun no existe).
-constexpr bool LEGACY_PROTOCOL      = true;
+// Compatibilidad con el script legacy de texto plano (F/L/R/U/S, "T", "LOG: ", "MODE: ").
+// Con true no se mandan lecturas de sensores y el watchdog queda desactivado; se conserva
+// solo para probar el robot sin el puente ROS2.
+// Con false: protocolo JSON de docs/protocols/motors-protocol.md, usado por serial_bridge de
+// robot_ws. Las lecturas ultrasonicas se envian a SENSOR_TELEMETRY_MS para no saturar 9600 baud
+// (una linea bloquea el loop ~140 ms), y el watchdog de CMD_TIMEOUT_MS queda activo.
+constexpr bool LEGACY_PROTOCOL      = false;
 
 // Potencias para motores 
 constexpr int SPEED_LEFT_FRONT      = 150;
