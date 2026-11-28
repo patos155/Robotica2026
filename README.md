@@ -66,9 +66,9 @@ Al 2026-09-18, en la rama `Dev`.
 **Definido y documentado:**
 - Arquitectura general de los 4 componentes y sus 3 enlaces
 - Convenciones transversales ([`docs/CONVENTIONS.md`](./docs/CONVENTIONS.md)), modelo de ramas, commits y checklist de PR
-- Protocolo Serial `firmware/motors` ↔ `robot_ws`: definido e implementado del lado del firmware ([`motors-protocol.md`](./docs/protocols/motors-protocol.md)); falta el puente en `robot_ws`
+- Protocolo Serial `firmware/motors` ↔ `robot_ws`: definido e implementado en ambos lados ([`motors-protocol.md`](./docs/protocols/motors-protocol.md)); el nodo `serial_bridge` de `robot_ws` guarda las lecturas ultrasónicas en JSON
 - Estructura de módulos y convenciones de `firmware/motors`, con watchdog de 500 ms en el código
-- Paquetes de `robot_ws`: `robot_interfaces` (Action `RunTest`) y `robot_vision`, con devcontainer ROS2 Humble
+- Paquetes de `robot_ws`: `robot_interfaces` (Action `RunTest`), `robot_serial` (puente Serial) y `robot_vision`, con devcontainer ROS2 Humble
 - `dashboard` en Vue 3 + Vite, conectado a `robot_ws` por rosbridge (WebSocket) y `web_video_server`
 - La decodificación de QR corre en `robot_ws` (`pyzbar`), no en un Arduino ni en el `dashboard`: el reglamento exige que sea autónoma
 - Reglamento de referencia (RoboCup Rescue 2026D) resumido por tema en `docs/rules/`; sus pendientes están en [`PENDIENTES.md`](./docs/rules/PENDIENTES.md)
@@ -82,12 +82,12 @@ Al 2026-09-18, en la rama `Dev`.
 - [ ] Pendientes del reglamento: ver [`docs/rules/PENDIENTES.md`](./docs/rules/PENDIENTES.md)
 
 **Pendiente de construir:**
-- [ ] `firmware/motors` — migrar a PlatformIO. Ya compila y su `CONVENTIONS.md` está al día; mientras no exista el puente Serial de `robot_ws` habla el protocolo legacy de `nagevacion_legacy.py` (`LEGACY_PROTOCOL` en `config.h`)
+- [ ] `firmware/motors` — migrar a PlatformIO. Ya compila y habla el protocolo JSON con `serial_bridge`; `LEGACY_PROTOCOL` queda en `false` y solo se activa para pruebas sin el puente
 - [ ] `firmware/sensors` — solo tiene `MagnetSensor` (lectura del polo bajo demanda con `read_sensors`); falta su README/CONVENTIONS y definir si hace falta otro sensor para la caja de víctima
-- [ ] `robot_ws` — ya tiene visión (cámara, compresión, pruebas QR y movimiento bajo `/run_test`); falta:
+- [ ] `robot_ws` — ya tiene visión (cámara, compresión, pruebas QR y movimiento bajo `/run_test`) y puente Serial con `firmware/motors` (`serial_bridge`); falta:
   - handlers de `test_runner` para hazmat y audio bidireccional
   - `robot_bringup` / `robot_core`: navegación, LiDAR + SLAM, agregación de datos
-  - puente Serial con ambos firmwares
+  - puente Serial con `firmware/sensors` (imán)
   - exportación de mapas GeoTIFF/PLY/CSV ([`docs/rules/05-mapeo.md`](./docs/rules/05-mapeo.md))
   - una exploración previa de navegación con LiDAR (scripts sueltos, sin portar a ROS2) existe solo en `robot_ws/legacy/` de las ramas `feat/codigo-sensores` y `dashboardCamRos2`
 - [ ] `dashboard` — hay un prototipo Vue 3 (video en vivo, prueba QR, conexión rosbridge con reconexión y banner de sin comunicación); falta mapa, sensores, control y botones para las demás pruebas

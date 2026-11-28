@@ -5,10 +5,11 @@ Workspace ROS2 que corre en la laptop embarcada del robot. Parte del proyecto
 
 ## Rol dentro del sistema
 
-Por ahora este workspace solo cubre **visión** (cámara + pruebas de
-detección de QR y de movimiento). La navegación autónoma (LiDAR, SLAM,
-agregación de sensores) y el puente Serial con
-`firmware/motors`/`firmware/sensors` descritos en
+Este workspace cubre **visión** (cámara + pruebas de detección de QR y de
+movimiento) y el **puente Serial con el Arduino de motores** (`robot_serial`),
+que guarda las lecturas de los 6 ultrasónicos en un JSON. La navegación
+autónoma (LiDAR, SLAM, agregación de sensores) y el puente con
+`firmware/sensors` descritos en
 [`docs/ARCHITECTURE.md`](../docs/ARCHITECTURE.md) todavía no están
 implementados aquí — hay una exploración previa sin portar en
 `robot_ws/legacy/`, que existe solo en las ramas `feat/codigo-sensores` y
@@ -25,6 +26,14 @@ robot_ws/
 │   │   ├── CMakeLists.txt
 │   │   └── action/
 │   │       └── RunTest.action      ← interfaz generica para correr una prueba bajo demanda
+│   ├── robot_serial/                ← paquete ament_python: puente con el Arduino de motores
+│   │   ├── package.xml / setup.py / setup.cfg
+│   │   ├── launch/
+│   │   │   └── serial_bridge.launch.py
+│   │   ├── robot_serial/
+│   │   │   ├── serial_bridge.py     ← lee telemetria, guarda JSON y envia comandos
+│   │   │   └── serial_protocol.py   ← parser puro y mapeo Twist -> F/L/R/S
+│   │   └── test/test_serial_protocol.py
 │   └── robot_vision/                ← paquete ament_python
 │       ├── package.xml
 │       ├── setup.py / setup.cfg
@@ -53,6 +62,12 @@ existen como paquetes — ver [Estado](#estado).
 | `/camera/image_raw` | `sensor_msgs/Image` | `camera_raw_publisher` | `image_compressor`, `test_runner` |
 | `/camera/image_raw/compressed` | `sensor_msgs/CompressedImage` | `image_compressor` | — (para visualizar, ej. `foxglove_bridge`, y eventualmente el puente hacia `dashboard`) |
 | `/run_test` | Action `robot_interfaces/RunTest` | — | `test_runner` (server) |
+| `/robot/ultrasonic` | `std_msgs/String` (JSON del Arduino) | `serial_bridge` | — (telemetria, tambien por rosbridge) |
+
+El comando hacia el Arduino entra por `/cmd_vel` (`geometry_msgs/Twist`),
+lo traduce `serial_bridge` a `F/L/R/S` y lo reenvía a 5 Hz para alimentar
+el watchdog de 500 ms del firmware. El JSON con lecturas y comandos se
+guarda en `~/.ros/robot_logs/ultrasonic.json` (parámetro `log_file`).
 
 El tópico crudo (`/camera/image_raw`) nunca sale de esta máquina — solo el
 comprimido está pensado para cruzar la red hacia `dashboard`. Un solo nodo
@@ -88,6 +103,33 @@ ros2 run robot_vision camera_raw_publisher
 ros2 run robot_vision image_compressor
 ros2 run robot_vision test_runner
 ```
+
+### Puente serial con el Arduino de motores
+
+Con `LEGACY_PROTOCOL = false` en `firmware/motors/movement/config.h`
+(valor actual), el Arduino habla JSON. El nodo se levanta solo:
+
+```bash
+ros2 run robot_serial serial_bridge
+# o con el launch:
+ros2 launch robot_serial serial_bridge.launch.py
+```
+
+Por defecto usa `/dev/ttyUSB1` a 9600 baud, publica `/robot/ultrasonic`
+y escribe `~/.ros/robot_logs/ultrasonic.json`. Se puede cambiar todo sin
+tocar código:
+
+```bash
+ros2 run robot_serial serial_bridge --ros-args \
+  -p serial_port:=/dev/ttyUSB0 \
+  -p baud_rate:=9600 \
+  -p log_file:=/tmp/ultrasonic.json
+```
+
+En modo `MANUAL` el nodo no envía comandos (manda el control remoto); en
+`AUTO` reenvía el último `/cmd_vel` a 5 Hz y espera `status/DONE` tras
+cada giro. Los parámetros `command_rate_hz` y `maneuver_timeout_s`
+también se pueden ajustar con `--ros-args`.
 
 ### Manual (sin devcontainer)
 
@@ -164,7 +206,8 @@ el efecto: `ros2 topic hz` y `ros2 topic bw /camera/image_raw/compressed`.
 - [ ] `robot_bringup` / `robot_core` — navegación, LiDAR + SLAM, agregación
       de datos. Existe una exploración previa sin integrar en
       `robot_ws/legacy/` de las ramas `feat/codigo-sensores` y `dashboardCamRos2`
-- [ ] Puente Serial con `firmware/motors` y `firmware/sensors`
+- [x] Puente Serial con `firmware/motors`: `serial_bridge` lee ultrasónicos, guarda JSON y envía comandos desde `/cmd_vel`
+- [ ] Puente Serial con `firmware/sensors` (imán bajo demanda)
 
 ## Ver también
 
