@@ -4,7 +4,7 @@
 **Medio:** Serial (USB), 9600 baud. Todos los mensajes terminan en `\n`.
 **Formato:** JSON por línea, campo `"type"` obligatorio.
 
-Fuente de verdad para ambos lados: si cambia algo aquí, debe cambiar en el mismo PR tanto `firmware/motors/movement/protocol.h` como el nodo `motors_bridge` de `robot_ws`.
+Fuente de verdad para ambos lados: si cambia algo aquí, debe cambiar en el mismo PR `firmware/motors/movement/protocol.h`, `firmware/motors/movement/config.h` y el nodo `serial_bridge` de `robot_ws`.
 
 ## Catálogo de tipos
 
@@ -45,20 +45,20 @@ Fuente de verdad para ambos lados: si cambia algo aquí, debe cambiar en el mism
 
 - `status`/`DONE`: el Arduino terminó de ejecutar la maniobra en curso — `robot_ws` puede volver a mandar comandos.
 - `mode`: refleja el estado físico del switch del control remoto, no una decisión de `robot_ws`.
-- `sensor`/`ultrasonic`: distancias en cm de los 6 sensores. Nomenclatura: `dist` + posición (`F`ront/`L`eft/`R`ight/`D`erecha... — **confirmar convención exacta de nombres con quien mantenga `UltrasonicArray.cpp`**, aquí se replica tal cual del README original.
+- `sensor`/`ultrasonic`: distancias en cm de los 6 sensores. La nomenclatura es la de `UltrasonicArray.cpp`: `distFL`, `distFR`, `distLF`, `distLR`, `distRF`, `distRR` (F/L/R = frente/izquierda/derecha, la segunda letra indica el lado). `400` significa "sin eco o fuera de rango". El Arduino envía esta línea cada `SENSOR_TELEMETRY_MS` (200 ms, 5 Hz) porque a 9600 baud ocupa el loop ~140 ms.
 
 ## Modo legacy
 
-Mientras `motors_bridge` no exista, el robot lo controla `nagevacion_legacy.py` (raíz del repo), que habla texto plano. Para ese script, `firmware/motors/movement/config.h` tiene `LEGACY_PROTOCOL = true`. Cuando está activo:
+Solo para probar el robot sin `serial_bridge`: con `LEGACY_PROTOCOL = true` en `firmware/motors/movement/config.h` el firmware habla texto plano como los scripts viejos. Cuando está activo:
 
 - **Comandos:** la línea exacta `F`, `L`, `R`, `U` o `S`, sin JSON. Se tolera `\r\n`. Un comando desconocido detiene los motores.
-- **Fin de maniobra:** `T` en vez de `{"type": "status", "value": "DONE"}`. Se manda una sola vez por maniobra, también cuando el giro lo disparan los ultrasónicos o cuando se aborta (switch a manual o control perdido a media maniobra). Python se bloquea tras `L`/`R` hasta recibirlo.
-- **Logs:** texto plano de una línea con prefijo `LOG: `. Nunca empiezan con `{` (Python los tomaría como sensores) ni son exactamente `T`.
-- **Modo:** `MODE: AUTO` o `MODE: MANUAL` en vez de `{"type": "mode", ...}`, al cambiar el switch. Al entrar a autónomo el Arduino detiene los motores, descarta los comandos pendientes y manda `T`. Python no repite `F` y tras `L`/`R` espera `T`; esa `T` lo desbloquea y borra su último comando, así que reenvía su decisión actual en el siguiente escaneo, sin reiniciarlo.
-- **Sensores:** no se envían, como legacy. A 9600 baud esa línea bloquea el loop entre 90 y 150 ms.
-- **Watchdog:** desactivado. Python manda `F` una sola vez, así que un watchdog de 500 ms detendría el robot a medio segundo de cada `F`. Trade-off aceptado: si Python se cae, el robot sigue con el último comando hasta que reaccionen los ultrasónicos frontales, se pase el switch a manual o se pierda el control remoto.
+- **Fin de maniobra:** `T` en vez de `{"type": "status", "value": "DONE"}`. El script viejo se bloquea tras `L`/`R` hasta recibirlo.
+- **Logs:** texto plano de una línea con prefijo `LOG: `; nunca empiezan con `{` ni son exactamente `T`.
+- **Modo:** `MODE: AUTO` o `MODE: MANUAL` en vez de `{"type": "mode", ...}`.
+- **Sensores:** no se envían; a 9600 baud esa línea bloquea el loop entre 90 y 150 ms.
+- **Watchdog:** desactivado, porque el script viejo manda `F` una sola vez y un watchdog de 500 ms detendría el robot a medio segundo de cada `F`.
 
-Con `LEGACY_PROTOCOL = false` aplica el protocolo JSON de este documento.
+Con `LEGACY_PROTOCOL = false` (valor actual) aplica el protocolo JSON de este documento: el watchdog de 500 ms está activo, por eso `serial_bridge` reenvía el comando vigente a 5 Hz, espera `status/DONE` tras `L`/`R`/`U`, y no envía nada en `MANUAL` (el control remoto manda en ese modo).
 
 ## Watchdog relacionado
 

@@ -11,7 +11,8 @@
 |---|---|---|---|
 | `/robot/pose` | `geometry_msgs/Pose2D` o `nav_msgs/Odometry` (a decidir) | ~2-5 Hz | Posición y orientación actual del robot |
 | `/map` | `nav_msgs/OccupancyGrid` | Cuando cambia | Mapa 2D generado por SLAM — tipo estándar de ROS2, compatible directo con herramientas de visualización |
-| `/robot/mode` | `std_msgs/String` (`"MANUAL"` / `"AUTO"`) | Al cambiar | Refleja el switch físico del control remoto |
+| `/robot/mode` | `std_msgs/String` (`"MANUAL"` / `"AUTO"`) | Al cambiar | Refleja el switch físico del control remoto (publicado por `serial_bridge`) |
+| `/robot/ultrasonic` | `std_msgs/String` (JSON de [`motors-protocol.md`](./motors-protocol.md)) | 5 Hz | Lecturas de los 6 ultrasónicos del Arduino de motores; `serial_bridge` también las guarda en JSON local |
 | `/robot/sensors` | Por decidir — ver más abajo | ~1-2 Hz | Última lectura de cada sensor ambiental |
 | `/robot/heartbeat` | `std_msgs/Empty` o timestamp | ~1 Hz | Le permite al `dashboard` medir cuánto tiempo lleva sin señal, para el `ConnectionBanner` |
 
